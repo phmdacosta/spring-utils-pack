@@ -19,4 +19,18 @@ public class PackageUtils {
                         pack.getName().startsWith(packageName) //filter by name
                 ).collect(Collectors.toList());
     }
+
+    public static Package getPackage(String packageName) {
+        return Arrays.stream(Package.getPackages())
+                .filter(pack -> pack.getName().equals(packageName))
+                .findFirst().orElse(null);
+    }
+
+    public static String getParentPackageName(String packageName) {
+        String[] packageParts = packageName.split("\\.");
+        packageParts[packageParts.length - 1] = "";
+        final StringBuilder result = new StringBuilder();
+        Arrays.stream(packageParts).forEach(pack -> result.append(".").append(pack));
+        return result.toString().replaceFirst("\\.", "");
+    }
 }

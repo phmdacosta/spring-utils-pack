@@ -21,7 +21,7 @@ public abstract class JsonAdapter<T> extends TypeAdapter<T> {
         jsonUtils = new JsonUtils(new AdapterFactory());
     }
 
-    public JsonUtils getGsonUtils() {
+    public JsonUtils getJsonUtils() {
         return jsonUtils;
     }
 

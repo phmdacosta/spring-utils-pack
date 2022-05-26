@@ -19,6 +19,55 @@ public class AdapterFactory implements TypeAdapterFactory {
     private static final String PROJECT_PACKAGE = "project.package";
 
     /**
+     * Create a new instance of adapter.
+     *
+     * @param clazz Class of object to be deserialized
+     * @param <T>   Type class of object to be deserialized
+     *
+     * @return {@link TypeAdapter} instance.
+     */
+    public <T> TypeAdapter<T> create(Class<T> clazz) {
+        return create(clazz, null);
+    }
+
+    /**
+     * Create a new instance of adapter.
+     *
+     * @param clazz Class of object to be deserialized
+     * @param type  If we use different types of adapters with different implementation,
+     *      *              use this parameter to define which type are looking for
+     * @param <T>   Type class of object to be deserialized
+     *
+     * @return {@link TypeAdapter} instance.
+     */
+    public <T> TypeAdapter<T> create(Class<T> clazz, String type) {
+        TypeAdapter<T> adapter = null;
+
+        // Look for all subpackages into service
+        String packageName = getAdapterPackage();
+        List<Package> subPackages = PackageUtils.getSubPackages(packageName);
+
+        while (adapter == null && !"".equals(packageName)) {
+            adapter = findAdapterInPackages(subPackages, clazz, type);
+            packageName = PackageUtils.getParentPackageName(packageName);
+            subPackages = PackageUtils.getSubPackages(packageName);
+        }
+
+        return adapter;
+    }
+
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
+        try {
+            return findAdapter(typeToken.getType().getTypeName()
+                    .concat(getAdapterSuffix()));
+        } catch (Exception e) {
+            Log.warn(this, e.getMessage());
+        }
+        return null;
+    }
+
+    /**
      * Get suffix of adapter's name.
      */
     protected String getAdapterSuffix() {
@@ -54,33 +103,8 @@ public class AdapterFactory implements TypeAdapterFactory {
                 + getAdapterSuffix();
     }
 
-    /**
-     * Create a new instance of adapter.
-     *
-     * @param clazz Class of object to be deserialized
-     * @param <T>   Type class of object to be deserialized
-     *
-     * @return {@link TypeAdapter} instance.
-     */
-    public <T> TypeAdapter<T> create(Class<T> clazz) {
-        return create(clazz, null);
-    }
-
-    /**
-     * Create a new instance of adapter.
-     *
-     * @param clazz Class of object to be deserialized
-     * @param type  If we use different types of adapters with different implementation,
-     *      *              use this parameter to define which type are looking for
-     * @param <T>   Type class of object to be deserialized
-     *
-     * @return {@link TypeAdapter} instance.
-     */
-    public <T> TypeAdapter<T> create(Class<T> clazz, String type) {
+    protected <T> TypeAdapter<T> findAdapterInPackages(List<Package> subPackages, Class<T> clazz, String type) {
         TypeAdapter<T> adapter = null;
-
-        // Look for all subpackages into service
-        List<Package> subPackages = PackageUtils.getSubPackages(getAdapterPackage());
 
         for (Package pack : subPackages) {
             try {
@@ -96,33 +120,16 @@ public class AdapterFactory implements TypeAdapterFactory {
         return adapter;
     }
 
-    private <T> TypeAdapter<T> findAdapter(String name) throws ClassNotFoundException {
+    protected <T> TypeAdapter<T> findAdapter(String name) throws ClassNotFoundException {
         TypeAdapter<T> adapter = null;
         try {
             Class<TypeAdapter<T>> adapterClass = (Class<TypeAdapter<T>>) Class.forName(name);
             if (adapterClass.getConstructors().length > 0) {
-                Class<?>[] paramTypes = adapterClass.getConstructors()[0].getParameterTypes();
-//                    if (paramTypes.length > 0) {
-//                        adapter = adapterClass.getConstructor(paramTypes)
-//                                .newInstance(new GsonUtils(new AdapterFactory()));
-//                    } else {
                 adapter = adapterClass.getConstructor(new Class[0]).newInstance();
-//                    }
             }
         } catch (Exception e) {
             Log.warn(this, e.getMessage());
         }
         return adapter;
-    }
-
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-        try {
-            return findAdapter(typeToken.getType().getTypeName()
-                    .concat(getAdapterSuffix()));
-        } catch (Exception e) {
-            Log.warn(this, e.getMessage());
-        }
-        return null;
     }
 }
