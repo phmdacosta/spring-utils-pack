@@ -17,6 +17,7 @@ public class JsonUtils {
 
     private final AdapterFactory adapterFactory;
     private GsonBuilder builder;
+    private boolean useExposedAnnotation;
 
     public JsonUtils(AdapterFactory adapterFactory) {
         this.adapterFactory = adapterFactory;
@@ -70,10 +71,19 @@ public class JsonUtils {
         return createGson(classOfT, adapter, type).fromJson(reader, classOfT);
     }
 
+    public JsonUtils setUseExposedAnnotation(boolean useExposedAnnotation) {
+        this.useExposedAnnotation = useExposedAnnotation;
+        return this;
+    }
+
     private <T> Gson createGson(Class<T> classOfT, TypeAdapter adapter, String type) throws NullPointerException, InvalidParameterException {
         if (builder == null) {
             builder = new GsonBuilder()
                     .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
+        }
+
+        if (useExposedAnnotation) {
+            builder.excludeFieldsWithoutExposeAnnotation();
         }
 
         Gson gson = builder.create();

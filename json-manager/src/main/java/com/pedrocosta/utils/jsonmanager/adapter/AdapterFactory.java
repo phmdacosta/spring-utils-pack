@@ -18,6 +18,17 @@ public class AdapterFactory implements TypeAdapterFactory {
     private static final String ADAPTER_PACKAGE = "adapters";
     private static final String PROJECT_PACKAGE = "project.package";
 
+    private String packageUri;
+
+    public AdapterFactory setPackageUri(String packageUri) {
+        this.packageUri = packageUri;
+        return this;
+    }
+
+    public String getPackageUri() {
+        return packageUri;
+    }
+
     /**
      * Create a new instance of adapter.
      *
@@ -78,7 +89,18 @@ public class AdapterFactory implements TypeAdapterFactory {
      * Get package name of adapters.
      */
     protected String getAdapterPackage() {
-        return AppProperties.get(PROJECT_PACKAGE);
+        String packUri = getPackageUri();
+        if (packUri == null || packUri.isEmpty()) {
+            try {
+                packUri = AppProperties.get(PROJECT_PACKAGE);
+                if (packUri == null || packUri.isEmpty()) {
+                    throw getPackageEmptyException();
+                }
+            } catch (NullPointerException e) {
+                throw getPackageEmptyException();
+            }
+        }
+        return packUri;
     }
 
     /**
@@ -131,5 +153,10 @@ public class AdapterFactory implements TypeAdapterFactory {
             Log.warn(this, e.getMessage());
         }
         return adapter;
+    }
+
+    protected NullPointerException getPackageEmptyException() {
+        return new NullPointerException("Could not get package uri. " +
+                "Set project.package property or use setPackageUri method.");
     }
 }
