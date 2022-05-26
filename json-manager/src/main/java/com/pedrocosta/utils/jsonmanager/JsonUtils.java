@@ -95,7 +95,8 @@ public class JsonUtils {
         if (adapter != null) {
             gson = builder.registerTypeAdapter(classOfT, adapter).create();
         } else {
-            Log.warn(this, Messages.get("error.adapter.not.found",
+            Log.warn(this, String.format(
+                    "Could not find adapter of %s for api type %s.",
                     classOfT.getSimpleName(), type));
         }
 
