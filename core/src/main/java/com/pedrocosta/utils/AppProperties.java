@@ -15,9 +15,13 @@ public class AppProperties {
     private static Properties properties;
 
     @Nullable
-    public static String get(String key) {
+    public static synchronized String get(String key) {
         if (properties == null) {
-            properties = getProperties();
+            try {
+                properties = getProperties();
+            } catch (Exception e) {
+                properties = new Properties();
+            }
         }
         return properties.getProperty(key);
     }
