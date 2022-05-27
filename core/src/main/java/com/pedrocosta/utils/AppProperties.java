@@ -12,28 +12,50 @@ import java.util.Properties;
  */
 public class AppProperties {
 
-    private static Properties properties;
+    private static final String DEFAULT_PROP_FILE_NAME = "application.properties";
+    private Properties properties;
+    private String propFileName;
+
+    private static AppProperties instance;
+
+    public static AppProperties instance(String propFileName) {
+        return new AppProperties()
+                .setPropFileName(propFileName)
+                .initProperties();
+    }
 
     @Nullable
     public static synchronized String get(String key) {
-        if (properties == null) {
-            try {
-                properties = getProperties();
-            } catch (Exception e) {
-                properties = new Properties();
-            }
+        if (instance == null) {
+            instance = instance(null);
         }
-        return properties.getProperty(key);
+        return instance.getProperty(key);
     }
 
-    private static Properties getProperties() {
-        final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        final Properties properties = new Properties();
-        try (InputStream resourceStream = loader.getResourceAsStream("application.properties")) {
-            properties.load(resourceStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public String getProperty(String key) {
+        return this.getProperties().getProperty(key);
+    }
+
+    private Properties getProperties() {
         return properties;
+    }
+
+    private AppProperties setPropFileName(String fileName) {
+        if ((fileName == null || fileName.isEmpty())) {
+            this.propFileName = DEFAULT_PROP_FILE_NAME;
+        } else if (!fileName.equals(propFileName)){
+            this.propFileName = fileName;
+        }
+        return this;
+    }
+
+    private AppProperties initProperties() {
+        final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        this.properties = new Properties();
+        try (InputStream resourceStream = loader.getResourceAsStream(propFileName)) {
+            properties.load(resourceStream);
+        } catch (IOException | NullPointerException ignored) {
+        }
+        return this;
     }
 }
