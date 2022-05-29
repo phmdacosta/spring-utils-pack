@@ -1,8 +1,7 @@
 package com.pedrocosta.utils.jsonmanager;
 
-import com.pedrocosta.utils.jsonmanager.adapter.AdapterFactory;
-import com.pedrocosta.utils.jsonmanager.obj.MyObject;
-import com.pedrocosta.utils.jsonmanager.obj.MyObjectExposeAnnot;
+import com.pedrocosta.utils.jsonmanager.adapter.TypeAdapterFactory;
+import com.pedrocosta.utils.jsonmanager.obj.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,7 @@ public class JsonUtilsTest {
 
     @BeforeEach
     public void setUp() {
-        jsonUtils = new JsonUtils(new AdapterFactory()
+        jsonUtils = new JsonUtils(new TypeAdapterFactory()
                 .setPackageUri("com.pedrocosta.utils.jsonmanager"));
 
         Calendar cal = Calendar.getInstance();
@@ -52,14 +51,38 @@ public class JsonUtilsTest {
     }
 
     @Test
-    public void testJsonSerialize_withAdapter() {
-        String json = jsonUtils.toJson(myObjectNoExposeAnnot);
+    public void testJsonSerialize_withTypeAdapter() {
+        String json = jsonUtils.toJson(myObjectNoExposeAnnot, new MyObjectTypeAdapter());
         assertEquals(expectedNoExpAnnot, json);
     }
 
     @Test
-    public void testJsonDeserialize_withAdapter() {
-        MyObject obj = jsonUtils.fromJson(expectedNoExpAnnot, MyObject.class);
+    public void testJsonSerialize_withReadAndWriteAdapter() {
+        String json = jsonUtils.toJson(myObjectNoExposeAnnot, new MyObjectFullAdapter());
+        assertEquals(expectedNoExpAnnot, json);
+    }
+
+    @Test
+    public void testJsonSerialize_withWriteAdapter() {
+        String json = jsonUtils.toJson(myObjectNoExposeAnnot, new MyObjectWriteAdapter());
+        assertEquals(expectedNoExpAnnot, json);
+    }
+
+    @Test
+    public void testJsonDeserialize_withTypeAdapter() {
+        MyObject obj = jsonUtils.fromJson(expectedNoExpAnnot, MyObject.class, new MyObjectTypeAdapter());
+        assertEquals(myObjectNoExposeAnnot, obj);
+    }
+
+    @Test
+    public void testJsonDeserialize_withReadAndWriteAdapter() {
+        MyObject obj = jsonUtils.fromJson(expectedNoExpAnnot, MyObject.class, new MyObjectFullAdapter());
+        assertEquals(myObjectNoExposeAnnot, obj);
+    }
+
+    @Test
+    public void testJsonDeserialize_withReadAdapter() {
+        MyObject obj = jsonUtils.fromJson(expectedNoExpAnnot, MyObject.class, new MyObjectReadAdapter());
         assertEquals(myObjectNoExposeAnnot, obj);
     }
 

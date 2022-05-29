@@ -2,7 +2,6 @@ package com.pedrocosta.utils.jsonmanager.adapter;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.pedrocosta.utils.AppProperties;
 import com.pedrocosta.utils.PackageUtils;
@@ -13,14 +12,14 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 @Component
-public class AdapterFactory implements TypeAdapterFactory {
+public class TypeAdapterFactory implements com.google.gson.TypeAdapterFactory {
     private static final String ADAPTER_SUFFIX = "Adapter";
     private static final String ADAPTER_PACKAGE = "adapters";
     private static final String PROJECT_PACKAGE = "project.package";
 
     private String packageUri;
 
-    public AdapterFactory setPackageUri(String packageUri) {
+    public TypeAdapterFactory setPackageUri(String packageUri) {
         this.packageUri = packageUri;
         return this;
     }
@@ -44,9 +43,12 @@ public class AdapterFactory implements TypeAdapterFactory {
     /**
      * Create a new instance of adapter.
      *
+     * Pattern of adapter's name is: Object class name + type + Adapter
+     * Ex: MyObjectReadAdapter
+     *
      * @param clazz Class of object to be deserialized
      * @param type  If we use different types of adapters with different implementation,
-     *      *              use this parameter to define which type are looking for
+     *              use this parameter to define which type are looking for
      * @param <T>   Type class of object to be deserialized
      *
      * @return {@link TypeAdapter} instance.
@@ -106,6 +108,9 @@ public class AdapterFactory implements TypeAdapterFactory {
     /**
      * Build adapter class name with its package.
      *
+     * Pattern of adapter's name is: Object class name + type + Adapter
+     * Ex: MyObjectReadAdapter
+     *
      * @param packageName   Name of package of adapter classes
      * @param clazz         Class of object to be deserialized
      * @param type          If we use different types of adapters with different implementation,
@@ -121,7 +126,7 @@ public class AdapterFactory implements TypeAdapterFactory {
             typeCap = StringUtils.capitalize(type);
         }
 
-        return packageName + "." + typeCap + clazz.getSimpleName()
+        return packageName + "." + clazz.getSimpleName() + typeCap
                 + getAdapterSuffix();
     }
 
