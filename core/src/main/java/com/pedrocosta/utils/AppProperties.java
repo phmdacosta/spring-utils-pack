@@ -10,52 +10,26 @@ import java.util.Properties;
  * @author Pedro H M da Costa
  * @version 1.0
  */
-public class AppProperties {
+public class AppProperties extends PropertiesUtils {
 
     private static final String DEFAULT_PROP_FILE_NAME = "application.properties";
-    private Properties properties;
-    private String propFileName;
+    private static final Object locker = new Object();
 
     private static AppProperties instance;
 
     public static AppProperties instance(String propFileName) {
-        return new AppProperties()
-                .setPropFileName(propFileName)
-                .initProperties();
+        AppProperties instance = new AppProperties();
+        instance.initProperties(propFileName);
+        return instance;
     }
 
     @Nullable
-    public static synchronized String get(String key) {
-        if (instance == null) {
-            instance = instance(null);
+    public static String get(String key) {
+        synchronized (locker) {
+            if (instance == null) {
+                instance = instance(DEFAULT_PROP_FILE_NAME);
+            }
+            return instance.getProperty(key);
         }
-        return instance.getProperty(key);
-    }
-
-    public String getProperty(String key) {
-        return this.getProperties().getProperty(key);
-    }
-
-    private Properties getProperties() {
-        return properties;
-    }
-
-    private AppProperties setPropFileName(String fileName) {
-        if ((fileName == null || fileName.isEmpty())) {
-            this.propFileName = DEFAULT_PROP_FILE_NAME;
-        } else if (!fileName.equals(propFileName)){
-            this.propFileName = fileName;
-        }
-        return this;
-    }
-
-    private AppProperties initProperties() {
-        final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        this.properties = new Properties();
-        try (InputStream resourceStream = loader.getResourceAsStream(propFileName)) {
-            properties.load(resourceStream);
-        } catch (IOException | NullPointerException ignored) {
-        }
-        return this;
     }
 }
