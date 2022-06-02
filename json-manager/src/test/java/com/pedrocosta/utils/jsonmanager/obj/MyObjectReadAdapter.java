@@ -1,18 +1,14 @@
 package com.pedrocosta.utils.jsonmanager.obj;
 
+import com.google.gson.stream.JsonWriter;
 import com.pedrocosta.utils.DateUtils;
 import com.pedrocosta.utils.exception.NotSupportedException;
-import com.pedrocosta.utils.jsonmanager.adapter.JsonReadAdapter;
+import com.pedrocosta.utils.jsonmanager.adapter.ReadTypeAdapter;
 import com.pedrocosta.utils.jsonmanager.stream.JsonReader;
 
 import java.io.IOException;
 
-public class MyObjectReadAdapter implements JsonReadAdapter<MyObject> {
-    protected final String ID = "id";
-    protected final String STRING = "string";
-    protected final String DOUBLE = "double";
-    protected final String DATE = "date";
-
+public class MyObjectReadAdapter extends ReadTypeAdapter<MyObject> implements MyObjectAdapterNames {
     @Override
     public MyObject read(JsonReader reader) throws IOException, NotSupportedException {
         MyObject myObject = new MyObject();
@@ -20,6 +16,11 @@ public class MyObjectReadAdapter implements JsonReadAdapter<MyObject> {
         myObject.setString(reader.get(STRING, String.class));
         myObject.setDoubl(reader.get(DOUBLE, Double.class));
         myObject.setDate(DateUtils.stringToDate(reader.get(DATE, String.class)));
+        myObject.setListStrings(reader.getList(LIST_STRINGS, getJsonUtils(), String.class));
+        myObject.setSetStrings(reader.getSet(SET_STRINGS, getJsonUtils(), String.class));
+        myObject.setStringArray(reader.getArray(STRING_ARRAY, getJsonUtils(), String.class));
+        myObject.setListMyObjects(reader.getList(LIST_OBJECT, getJsonUtils(), MyObject.class));
+        myObject.setSetMyObjects(reader.getSet(SET_OBJECT, getJsonUtils(), MyObject.class));
         return myObject;
     }
 }

@@ -4,6 +4,8 @@ import com.google.gson.annotations.Expose;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @Data
 public class MyObjectExposeAnnot {
@@ -15,4 +17,14 @@ public class MyObjectExposeAnnot {
     private Double doubl;
     @Expose(serialize = false)
     private Date date;
+//    @Expose
+    private List<String> listStrings;
+    @Expose
+    private Set<String> setStrings;
+    @Expose
+    private String[] stringArray;
+    @Expose
+    private List<MyObjectExposeAnnot> listMyObjects;
+//    @Expose
+    private Set<MyObjectExposeAnnot> setMyObjects;
 }

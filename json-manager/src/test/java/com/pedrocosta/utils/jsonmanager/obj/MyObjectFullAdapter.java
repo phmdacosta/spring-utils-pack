@@ -2,19 +2,13 @@ package com.pedrocosta.utils.jsonmanager.obj;
 
 import com.pedrocosta.utils.DateUtils;
 import com.pedrocosta.utils.exception.NotSupportedException;
-import com.pedrocosta.utils.jsonmanager.adapter.JsonReadAdapter;
-import com.pedrocosta.utils.jsonmanager.adapter.JsonWriteAdapter;
+import com.pedrocosta.utils.jsonmanager.adapter.UtilsTypeAdapter;
 import com.pedrocosta.utils.jsonmanager.stream.JsonReader;
 import com.pedrocosta.utils.jsonmanager.stream.JsonWriter;
 
 import java.io.IOException;
 
-public class MyObjectFullAdapter implements JsonReadAdapter<MyObject>, JsonWriteAdapter<MyObject> {
-
-    protected final String ID = "id";
-    protected final String STRING = "string";
-    protected final String DOUBLE = "double";
-    protected final String DATE = "date";
+public class MyObjectFullAdapter extends UtilsTypeAdapter<MyObject> implements MyObjectAdapterNames {
 
     @Override
     public MyObject read(JsonReader reader) throws IOException, NotSupportedException {
@@ -23,6 +17,11 @@ public class MyObjectFullAdapter implements JsonReadAdapter<MyObject>, JsonWrite
         myObject.setString(reader.get(STRING, String.class));
         myObject.setDoubl(reader.get(DOUBLE, Double.class));
         myObject.setDate(DateUtils.stringToDate(reader.get(DATE, String.class)));
+        myObject.setListStrings(reader.getList(LIST_STRINGS, getJsonUtils(), String.class));
+        myObject.setSetStrings(reader.getSet(SET_STRINGS, getJsonUtils(), String.class));
+        myObject.setStringArray(reader.getArray(STRING_ARRAY, getJsonUtils(), String.class));
+        myObject.setListMyObjects(reader.getList(LIST_OBJECT, getJsonUtils(), MyObject.class));
+        myObject.setSetMyObjects(reader.getSet(SET_OBJECT, getJsonUtils(), MyObject.class));
         return myObject;
     }
 
@@ -32,5 +31,10 @@ public class MyObjectFullAdapter implements JsonReadAdapter<MyObject>, JsonWrite
         writer.add(STRING, obj.getString());
         writer.add(DOUBLE, obj.getDoubl());
         writer.add(DATE, DateUtils.dateToString(obj.getDate()));
+        writer.addJson(LIST_STRINGS, obj.getListStrings(), getJsonUtils());
+        writer.addJson(SET_STRINGS, getJsonUtils().toJson(obj.getSetStrings()));
+        writer.addJson(STRING_ARRAY, getJsonUtils().toJson(obj.getStringArray()));
+        writer.addJson(LIST_OBJECT, getJsonUtils().toJson(obj.getListMyObjects()));
+        writer.addJson(SET_OBJECT, getJsonUtils().toJson(obj.getSetMyObjects()));
     }
 }
