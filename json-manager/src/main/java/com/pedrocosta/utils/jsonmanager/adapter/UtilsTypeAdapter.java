@@ -70,6 +70,7 @@ public abstract class UtilsTypeAdapter<T> extends TypeAdapter<T> implements Json
     }
 
     protected void end(JsonReader reader) throws IOException {
+        skipToEnd(reader);
         reader.endObject();
     }
 
@@ -79,6 +80,15 @@ public abstract class UtilsTypeAdapter<T> extends TypeAdapter<T> implements Json
 
     protected void end(JsonWriter writer) throws IOException {
         writer.endObject();
+    }
+
+    protected void skipToEnd(JsonReader reader) throws IOException {
+        while (reader.hasNext()) {
+            JsonToken token = reader.peek();
+            if (!JsonToken.END_OBJECT.equals(token)) {
+                reader.skipValue();
+            }
+        }
     }
 
     protected void writeJson(JsonWriter writer, T obj) throws IOException, NotSupportedException {
