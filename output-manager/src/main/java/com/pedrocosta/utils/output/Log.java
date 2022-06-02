@@ -17,8 +17,6 @@ public final class Log {
     private static final int WARN = 3;
     private static final int ERROR = 4;
 
-    private static Logger logger;
-
     /**
      * Log trace messages.
      *
@@ -95,11 +93,8 @@ public final class Log {
             log(ERROR, obj, null, throwable);
     }
 
-    private static synchronized Logger getLogger(Object obj) {
-        if (logger == null) {
-            logger = LogManager.getLogger(obj);
-        }
-        return logger;
+    private static Logger getLogger(Object obj) {
+        return LogManager.getLogger(obj);
     }
 
     private static void log(int type, Object obj, String msg, Throwable throwable) {

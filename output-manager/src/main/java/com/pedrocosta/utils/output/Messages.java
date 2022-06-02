@@ -17,6 +17,7 @@ import java.util.Locale;
 @Component
 public final class Messages {
     private static ResourceBundleMessageSource source;
+    private static final Object locker = new Object();
 
     /**
      * Get message by its key in properties file.
@@ -60,15 +61,17 @@ public final class Messages {
      * @return {@link ResourceBundleMessageSource} object.
      */
     private static ResourceBundleMessageSource getSource(String ... baseNames) {
-        if (source == null) {
-            source = new ResourceBundleMessageSource();
-            if (baseNames != null) {
-                source.setBasenames(baseNames);
+        synchronized (locker) {
+            if (source == null) {
+                source = new ResourceBundleMessageSource();
+                if (baseNames != null) {
+                    source.setBasenames(baseNames);
+                }
+                source.setUseCodeAsDefaultMessage(true);
+                source.setDefaultLocale(getDefaultLocale());
             }
-            source.setUseCodeAsDefaultMessage(true);
-            source.setDefaultLocale(getDefaultLocale());
+            return source;
         }
-        return source;
     }
 
     /**
