@@ -40,6 +40,7 @@ public class DateUtils {
      * @return {@link Date} object of date.
      */
     public static Date stringToDate(String s, String format) {
+        if (s == null) return null;
         Date date = null;
         try {
             date = new SimpleDateFormat(format).parse(s);
@@ -68,6 +69,7 @@ public class DateUtils {
      * @return {@link String} object of date.
      */
     public static String dateToString(Date d, String format) {
+        if (d == null) return null;
         return new SimpleDateFormat(format).format(d);
     }
 
