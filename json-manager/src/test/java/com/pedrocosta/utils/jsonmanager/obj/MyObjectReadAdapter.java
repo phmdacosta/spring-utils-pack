@@ -1,6 +1,5 @@
 package com.pedrocosta.utils.jsonmanager.obj;
 
-import com.google.gson.stream.JsonWriter;
 import com.pedrocosta.utils.DateUtils;
 import com.pedrocosta.utils.exception.NotSupportedException;
 import com.pedrocosta.utils.jsonmanager.adapter.ReadTypeAdapter;

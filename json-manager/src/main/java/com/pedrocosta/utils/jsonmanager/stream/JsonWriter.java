@@ -31,7 +31,7 @@ public class JsonWriter {
         gsonWriter.endArray();
     }
 
-    public com.google.gson.stream.JsonWriter getGson() throws IOException {
+    public com.google.gson.stream.JsonWriter getGson() {
         return gsonWriter;
     }
 

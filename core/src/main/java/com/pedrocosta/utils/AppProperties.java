@@ -2,10 +2,6 @@ package com.pedrocosta.utils;
 
 import org.springframework.lang.Nullable;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 /**
  * @author Pedro H M da Costa
  * @version 1.0

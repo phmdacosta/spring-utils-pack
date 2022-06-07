@@ -1,10 +1,5 @@
 import com.pedrocosta.utils.AppProperties;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class AppPropertiesTest {
 
@@ -17,10 +12,8 @@ public class AppPropertiesTest {
     }
 
     @Test
-    public void testGetProperty_propertiesFileNotExist() throws IOException {
+    public void testGetProperty_propertiesFileNotExist() {
         AppProperties appProperties = AppProperties.instance("abc.properties");
-        assert appProperties != null;
-
         String val = appProperties.getProperty(PROP_NAME);
         assert val == null;
     }

@@ -6,5 +6,5 @@ import com.pedrocosta.utils.jsonmanager.stream.JsonReader;
 import java.io.IOException;
 
 public interface JsonReadAdapter<T> extends JsonAdapter<T> {
-    public abstract T read(JsonReader reader) throws IOException, NotSupportedException;
+    T read(JsonReader reader) throws IOException, NotSupportedException;
 }

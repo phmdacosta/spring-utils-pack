@@ -6,5 +6,5 @@ import com.pedrocosta.utils.jsonmanager.stream.JsonWriter;
 import java.io.IOException;
 
 public interface JsonWriteAdapter<T> extends JsonAdapter<T> {
-    public void write(JsonWriter writer, T obj) throws IOException, NotSupportedException;
+    void write(JsonWriter writer, T obj) throws IOException, NotSupportedException;
 }

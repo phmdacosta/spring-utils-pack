@@ -6,7 +6,6 @@ import com.pedrocosta.utils.jsonmanager.adapter.JsonReadAdapter;
 import com.pedrocosta.utils.output.Log;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -37,7 +36,7 @@ public class JsonReader {
         gsonReader.endArray();
     }
 
-    public com.google.gson.stream.JsonReader getGson() throws IOException {
+    public com.google.gson.stream.JsonReader getGson() {
         return gsonReader;
     }
 

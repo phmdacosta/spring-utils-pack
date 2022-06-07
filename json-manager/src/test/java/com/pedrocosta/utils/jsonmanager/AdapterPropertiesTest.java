@@ -8,7 +8,7 @@ import java.util.List;
 public class AdapterPropertiesTest {
 
     @Test
-    public void testGetAllProperties() throws Exception {
+    public void testGetAllProperties() {
         List<String> properties = AdapterProperties.getAll();
         assert !properties.isEmpty();
     }
