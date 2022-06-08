@@ -4,9 +4,18 @@ import com.pedrocosta.utils.jsonmanager.JsonUtils;
 
 import java.io.IOException;
 
+/**
+ * @author Pedro H. M. da Costa
+ * @since 1.0
+ */
 public class JsonWriter {
     private final com.google.gson.stream.JsonWriter gsonWriter;
 
+    /**
+     * Constructor.
+     *
+     * @param gsonWriter    {@link com.google.gson.stream.JsonWriter} object
+     */
     public JsonWriter(com.google.gson.stream.JsonWriter gsonWriter) {
         this.gsonWriter = gsonWriter;
     }
@@ -31,10 +40,15 @@ public class JsonWriter {
         gsonWriter.endArray();
     }
 
-    public com.google.gson.stream.JsonWriter getGson() {
+    public com.google.gson.stream.JsonWriter gsonWriter() {
         return gsonWriter;
     }
 
+    /**
+     * Add value to json.
+     * @param name  Name of json field
+     * @param value Value of the field
+     */
     public void add(String name, String value) throws IOException {
         if (value != null && !value.isEmpty()) {
             setName(name);
@@ -42,35 +56,70 @@ public class JsonWriter {
         }
     }
 
+    /**
+     * Add value to json.
+     * @param name  Name of json field
+     * @param value Value of the field
+     */
     public void add(String name, int value) throws IOException {
         setName(name);
         gsonWriter.value(value);
     }
 
+    /**
+     * Add value to json.
+     * @param name  Name of json field
+     * @param value Value of the field
+     */
     public void add(String name, double value) throws IOException {
         setName(name);
         gsonWriter.value(value);
     }
 
+    /**
+     * Add value to json.
+     * @param name  Name of json field
+     * @param value Value of the field
+     */
     public void add(String name, boolean value) throws IOException {
         setName(name);
         gsonWriter.value(value);
     }
 
+    /**
+     * Add value to json.
+     * @param name  Name of json field
+     * @param value Value of the field
+     */
     public void add(String name, long value) throws IOException {
         setName(name);
         gsonWriter.value(value);
     }
 
+    /**
+     * Add value to json.
+     * @param name  Name of json field
+     * @param value Value of the field
+     */
     public void add(String name, Number value) throws IOException {
         setName(name);
         gsonWriter.value(value);
     }
 
+    /**
+     * Add value to json.
+     * @param name      Name of json field
+     * @param jsonUtils {@link JsonUtils} to serialize value
+     */
     public <T> void addJson(String name, T obj, JsonUtils jsonUtils) throws IOException {
         addJson(name, jsonUtils.toJson(obj));
     }
 
+    /**
+     * Add value to json.
+     * @param name  Name of json field
+     * @param value Serialized json object
+     */
     public void addJson(String name, String value) throws IOException {
         if (value != null && !value.isEmpty()) {
             setName(name);

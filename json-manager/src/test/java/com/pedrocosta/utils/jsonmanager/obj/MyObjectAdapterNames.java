@@ -10,4 +10,6 @@ public interface MyObjectAdapterNames {
     String STRING_ARRAY = "stringArray";
     String LIST_OBJECT = "listMyObjects";
     String SET_OBJECT = "setMyObjects";
+    String BOOLEAN = "boolean";
+    String CHILD = "child";
 }

@@ -18,4 +18,6 @@ public class MyObject implements Serializable {
     private String[] stringArray;
     private List<MyObject> listMyObjects;
     private Set<MyObject> setMyObjects;
+    private boolean bool;
+    private MyObject child;
 }

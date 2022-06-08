@@ -58,7 +58,7 @@ public class JsonUtils {
     }
 
     public final <T> T fromJson(JsonReader reader, Class<T> classOfT, TypeAdapter<T> adapter) throws NullPointerException, InvalidParameterException, IOException {
-        return createGson(classOfT, adapter).fromJson(reader.getGson(), classOfT);
+        return createGson(classOfT, adapter).fromJson(reader.gsonReader(), classOfT);
     }
 
     protected Gson createGson(Class<?> classOfT, TypeAdapter<?> typeAdapter) {

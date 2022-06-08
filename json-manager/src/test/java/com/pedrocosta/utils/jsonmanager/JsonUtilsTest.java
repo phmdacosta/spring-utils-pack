@@ -26,19 +26,28 @@ public class JsonUtilsTest {
             ",\"stringArray\":[\"mno\",\"pqr\",\"stu\"]" +
             ",\"listMyObjects\":[" +
                                     "{\"" +
-                                        "id\":5," +
-                                        "\"string\":\"My object 1 to list\"" +
+                                        "id\":5" +
+                                        ",\"string\":\"My object 1 to list\"" +
+                                        ",\"boolean\":false" +
                                     "}," +
                                     "{" +
-                                        "\"id\":6," +
-                                        "\"string\":\"My object 2 to list\"" +
+                                        "\"id\":6" +
+                                        ",\"string\":\"My object 2 to list\"" +
+                                        ",\"boolean\":false" +
                                     "}" +
                                 "]" +
             ",\"setMyObjects\":[" +
                                 "{" +
-                                    "\"id\":6," +
-                                    "\"string\":\"My object 2 to list\"" +
+                                    "\"id\":6" +
+                                    ",\"string\":\"My object 2 to list\"" +
+                                    ",\"boolean\":false" +
                                 "}]"+
+            ",\"boolean\":false" +
+            ",\"child\":{\"" +
+                            "id\":7" +
+                            ",\"string\":\"My child object\"" +
+                            ",\"boolean\":false" +
+                        "}" +
             "}";
 
     @BeforeEach
@@ -67,6 +76,10 @@ public class JsonUtilsTest {
         myObject2.setString("My object 2 to list");
         myObjectNoExposeAnnot.setListMyObjects(Arrays.asList(myObject1, myObject2));
         myObjectNoExposeAnnot.setSetMyObjects(new HashSet<>(Collections.singletonList(myObject2)));
+        MyObject child = new MyObject();
+        child.setId(7);
+        child.setString("My child object");
+        myObjectNoExposeAnnot.setChild(child);
 
 
         myObjectExposeAnnot = new MyObjectExposeAnnot();

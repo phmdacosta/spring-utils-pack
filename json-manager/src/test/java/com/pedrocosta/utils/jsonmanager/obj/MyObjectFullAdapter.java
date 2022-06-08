@@ -22,6 +22,8 @@ public class MyObjectFullAdapter extends UtilsTypeAdapter<MyObject> implements M
         myObject.setStringArray(reader.getArray(STRING_ARRAY, getJsonUtils(), String.class));
         myObject.setListMyObjects(reader.getList(LIST_OBJECT, getJsonUtils(), MyObject.class));
         myObject.setSetMyObjects(reader.getSet(SET_OBJECT, getJsonUtils(), MyObject.class));
+        myObject.setBool(reader.get(BOOLEAN, Boolean.class));
+        myObject.setChild(reader.getObject(CHILD, getJsonUtils(), MyObject.class));
         return myObject;
     }
 
@@ -36,5 +38,7 @@ public class MyObjectFullAdapter extends UtilsTypeAdapter<MyObject> implements M
         writer.addJson(STRING_ARRAY, getJsonUtils().toJson(obj.getStringArray()));
         writer.addJson(LIST_OBJECT, getJsonUtils().toJson(obj.getListMyObjects()));
         writer.addJson(SET_OBJECT, getJsonUtils().toJson(obj.getSetMyObjects()));
+        writer.add(BOOLEAN, obj.isBool());
+        writer.addJson(CHILD, getJsonUtils().toJson(obj.getChild()));
     }
 }

@@ -18,8 +18,11 @@ public class MyObjectReadAdapter extends ReadTypeAdapter<MyObject> implements My
         myObject.setListStrings(reader.getList(LIST_STRINGS, getJsonUtils(), String.class));
         myObject.setSetStrings(reader.getSet(SET_STRINGS, getJsonUtils(), String.class));
         myObject.setStringArray(reader.getArray(STRING_ARRAY, getJsonUtils(), String.class));
+        myObject.setStringArray(reader.getArray(STRING_ARRAY, getJsonUtils(), String.class));
         myObject.setListMyObjects(reader.getList(LIST_OBJECT, getJsonUtils(), MyObject.class));
         myObject.setSetMyObjects(reader.getSet(SET_OBJECT, getJsonUtils(), MyObject.class));
+        myObject.setBool(reader.get(BOOLEAN, Boolean.class));
+        myObject.setChild(reader.getObject(CHILD, getJsonUtils(), MyObject.class));
         return myObject;
     }
 }

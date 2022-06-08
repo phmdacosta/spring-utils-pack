@@ -19,5 +19,7 @@ public class MyObjectWriteAdapter extends WriteTypeAdapter<MyObject> implements 
         writer.addJson(STRING_ARRAY, getJsonUtils().toJson(obj.getStringArray()));
         writer.addJson(LIST_OBJECT, getJsonUtils().toJson(obj.getListMyObjects()));
         writer.addJson(SET_OBJECT, getJsonUtils().toJson(obj.getSetMyObjects()));
+        writer.add(BOOLEAN, obj.isBool());
+        writer.addJson(CHILD, getJsonUtils().toJson(obj.getChild()));
     }
 }
