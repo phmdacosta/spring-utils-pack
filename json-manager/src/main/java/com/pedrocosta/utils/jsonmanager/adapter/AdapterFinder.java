@@ -30,8 +30,24 @@ public class AdapterFinder extends ClassFinder {
      *
      * @return {@link TypeAdapter} object
      */
-    public static <T> TypeAdapter<T> findAdapterInPackages(List<Package> packages, String className) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        return findAdapterInPackages(packages, className, null);
+    public static <T> TypeAdapter<T> findAdapterInPackages(List<Package> packages, String className) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, IOException, URISyntaxException {
+        return findAdapterInPackages(packages, className, false);
+    }
+
+    /**
+     * Find {@link TypeAdapter} object by its class name.
+     * <br>
+     * It builds the class name by the following pattern:
+     * Object class name + type + Adapter
+     *
+     * @param packages              List of packages to look
+     * @param className             Class name to the object of the adapter
+     * @param searchForAnnotation   Search or not for adapters with {@link JsonAdapter} annotation.
+     *
+     * @return {@link TypeAdapter} object
+     */
+    public static <T> TypeAdapter<T> findAdapterInPackages(List<Package> packages, String className, boolean searchForAnnotation) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, IOException, URISyntaxException {
+        return findAdapterInPackages(packages, className, null, searchForAnnotation);
     }
 
     /**
@@ -46,11 +62,38 @@ public class AdapterFinder extends ClassFinder {
      *
      * @return {@link TypeAdapter} object
      */
-    public static <T> TypeAdapter<T> findAdapterInPackages(List<Package> packages, String className, String type) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public static <T> TypeAdapter<T> findAdapterInPackages(List<Package> packages, String className, String type) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, IOException, URISyntaxException {
+        return findAdapterInPackages(packages, className, type, false);
+    }
+
+    /**
+     * Find {@link TypeAdapter} object by its class name.
+     * <br>
+     * It builds the class name by the following pattern:
+     * Object class name + type + Adapter
+     *
+     * @param packages              List of packages to look
+     * @param className             Class name to the object of the adapter
+     * @param type                  Business type (if exists)
+     * @param searchForAnnotation   Search or not for adapters with {@link JsonAdapter} annotation.
+     *
+     * @return {@link TypeAdapter} object
+     */
+    public static <T> TypeAdapter<T> findAdapterInPackages(List<Package> packages, String className, String type, boolean searchForAnnotation) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, IOException, URISyntaxException {
         TypeAdapter<T> adapter = null;
         for (Package pack : packages) {
             try {
-                adapter = findAdapterByName(getAdapterName(pack.getName(), className, type));
+                if (searchForAnnotation) {
+                    List<TypeAdapter<T>> annotAdapters = findAllAnnotated(pack.getName());
+                    for (TypeAdapter<T> typeAdapter : annotAdapters) {
+                        if (typeAdapter.getClass().getSimpleName()
+                                .startsWith(getAdapterPrefix(className, type))){
+                            adapter = typeAdapter;
+                        }
+                    }
+                } else {
+                    adapter = findAdapterByName(getAdapterName(pack.getName(), className, type));
+                }
                 if (adapter != null) {
                     break;
                 }
@@ -116,14 +159,16 @@ public class AdapterFinder extends ClassFinder {
      * @return Adapter complete name with package.
      */
     protected static String getAdapterName(String packageName, String classSimpleName, String type) {
-        String typeCap = "";
+        return packageName + "." + getAdapterPrefix(classSimpleName, type)
+                + getAdapterSuffix();
+    }
 
+    protected static String getAdapterPrefix(String classSimpleName, String type) {
+        String typeCap = "";
         if (type != null && !type.isEmpty()) {
             typeCap = StringUtils.capitalize(type);
         }
-
-        return packageName + "." + typeCap + classSimpleName
-                + getAdapterSuffix();
+        return typeCap + classSimpleName;
     }
 
     /**

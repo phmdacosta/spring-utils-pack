@@ -161,10 +161,7 @@ public class UtilsTypeAdapterFactory implements TypeAdapterFactory {
 
             while (adapter == null && !"".equals(packageName)) {
                 try {
-                    adapter = AdapterFinder.findAdapterInPackages(subPackages, classSimpleName, businessType);
-                    if (this.useAnnotation && !ClassUtils.hasAnnotation(adapter.getClass(), JsonAdapter.class)) {
-                        adapter = null;
-                    }
+                    adapter = AdapterFinder.findAdapterInPackages(subPackages, classSimpleName, businessType, useAnnotation);
                 } catch (Exception e) {
                     Log.warn(this, e.getMessage());
                 }
