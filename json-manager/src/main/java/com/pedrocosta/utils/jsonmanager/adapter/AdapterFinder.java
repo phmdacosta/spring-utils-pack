@@ -49,10 +49,12 @@ public class AdapterFinder extends ClassFinder {
     public static <T> TypeAdapter<T> findAdapterInPackages(List<Package> packages, String className, String type) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         TypeAdapter<T> adapter = null;
         for (Package pack : packages) {
-            adapter = findAdapterByName(getAdapterName(pack.getName(), className, type));
-            if (adapter != null) {
-                break;
-            }
+            try {
+                adapter = findAdapterByName(getAdapterName(pack.getName(), className, type));
+                if (adapter != null) {
+                    break;
+                }
+            } catch (ClassNotFoundException ignored) {}
         }
         return adapter;
     }
