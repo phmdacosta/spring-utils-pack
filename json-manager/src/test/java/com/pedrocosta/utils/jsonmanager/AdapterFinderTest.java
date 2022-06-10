@@ -2,6 +2,7 @@ package com.pedrocosta.utils.jsonmanager;
 
 import com.google.gson.TypeAdapter;
 import com.pedrocosta.utils.jsonmanager.adapter.AdapterFinder;
+import com.pedrocosta.utils.jsonmanager.adapter.UtilsTypeAdapter;
 import com.pedrocosta.utils.jsonmanager.obj.MyObject;
 import com.pedrocosta.utils.jsonmanager.obj.MyObjectAnnot;
 import com.pedrocosta.utils.jsonmanager.obj.MyObjectAnnotAdapter;
@@ -20,7 +21,7 @@ public class AdapterFinderTest {
 
     @Test
     public void test_findAllAdapters_annotated() throws Exception {
-        List<TypeAdapter<MyObjectAnnot>> adapters = AdapterFinder
+        List<UtilsTypeAdapter<MyObjectAnnot>> adapters = AdapterFinder
                 .findAllAnnotated(this.getClass().getPackage().getName());
         assert !adapters.isEmpty();
         assert adapters.stream().findFirst().orElse(null) instanceof MyObjectAnnotAdapter;

@@ -13,6 +13,7 @@ import java.io.IOException;
 public abstract class UtilsTypeAdapter<T> extends TypeAdapter<T> implements JsonWriteAdapter<T>, JsonReadAdapter<T> {
 
     private JsonUtils jsonUtils;
+    private Class<T> classOfType;
 
     public JsonUtils getJsonUtils() {
         if (jsonUtils == null) {
@@ -25,6 +26,14 @@ public abstract class UtilsTypeAdapter<T> extends TypeAdapter<T> implements Json
 
     public void setJsonUtils(JsonUtils jsonUtils) {
         this.jsonUtils = jsonUtils;
+    }
+
+    public Class<T> getTypeClass() {
+        return classOfType;
+    }
+
+    public void setTypeClass(Class<T> typeClass) {
+        this.classOfType = typeClass;
     }
 
     @Override

@@ -9,7 +9,7 @@ import com.pedrocosta.utils.jsonmanager.stream.JsonWriter;
 
 import java.io.IOException;
 
-@JsonAdapter
+@JsonAdapter(type = MyObjectAnnot.class)
 public class MyObjectAnnotAdapter extends UtilsTypeAdapter<MyObjectAnnot> implements MyObjectAdapterNames {
     @Override
     public MyObjectAnnot read(JsonReader reader) throws IOException, NotSupportedException {

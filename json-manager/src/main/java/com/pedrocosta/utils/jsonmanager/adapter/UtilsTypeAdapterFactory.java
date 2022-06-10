@@ -36,7 +36,7 @@ public class UtilsTypeAdapterFactory implements TypeAdapterFactory {
         return this;
     }
 
-    public <T> UtilsTypeAdapterFactory addAdapter(Class<T> typeClass, Class<? extends TypeAdapter<T>> adapterClass) {
+    public <T> UtilsTypeAdapterFactory addAdapter(Class<T> typeClass, Class<? extends UtilsTypeAdapter<T>> adapterClass) {
         this.addAdapterName(typeClass, adapterClass.getName());
         return this;
     }
@@ -49,8 +49,8 @@ public class UtilsTypeAdapterFactory implements TypeAdapterFactory {
         return this;
     }
 
-    public <T> UtilsTypeAdapterFactory addAllAdapters(Map<Class<T>, Class<? extends TypeAdapter<T>>> adapterNames) {
-        for (Map.Entry<Class<T>, Class<? extends TypeAdapter<T>>> entry : adapterNames.entrySet()) {
+    public <T> UtilsTypeAdapterFactory addAllAdapters(Map<Class<T>, Class<? extends UtilsTypeAdapter<T>>> adapterNames) {
+        for (Map.Entry<Class<T>, Class<? extends UtilsTypeAdapter<T>>> entry : adapterNames.entrySet()) {
             this.addAdapterName(entry.getKey(), entry.getValue().getName());
         }
         return this;
@@ -107,7 +107,7 @@ public class UtilsTypeAdapterFactory implements TypeAdapterFactory {
      *
      * @return {@link TypeAdapter} instance.
      */
-    public <T> TypeAdapter<T> create(Class<T> clazz) {
+    public <T> UtilsTypeAdapter<T> create(Class<T> clazz) {
         return create(clazz, null);
     }
 
@@ -124,8 +124,8 @@ public class UtilsTypeAdapterFactory implements TypeAdapterFactory {
      *
      * @return {@link TypeAdapter} instance.
      */
-    public <T> TypeAdapter<T> create(Class<T> clazz, String businessType) {
-        TypeAdapter<T> adapter = null;
+    public <T> UtilsTypeAdapter<T> create(Class<T> clazz, String businessType) {
+        UtilsTypeAdapter<T> adapter = null;
         String classSimpleName = clazz.getSimpleName();
 
         // First look at local config
@@ -153,7 +153,7 @@ public class UtilsTypeAdapterFactory implements TypeAdapterFactory {
 
             if (this.useAnnotation) {
                 try {
-                    List<TypeAdapter<T>> adapters = AdapterFinder.findAllAnnotated(packageName);
+                    List<UtilsTypeAdapter<T>> adapters = AdapterFinder.findAllAnnotated(packageName);
                 } catch (Exception e) {
                     Log.warn(this, e.getMessage());
                 }
@@ -170,6 +170,9 @@ public class UtilsTypeAdapterFactory implements TypeAdapterFactory {
             }
         }
 
+        if (adapter != null) {
+            adapter.setTypeClass(clazz);
+        }
         return adapter;
     }
 
@@ -180,8 +183,8 @@ public class UtilsTypeAdapterFactory implements TypeAdapterFactory {
      * @param <T>       Type class of object to be serialized
      * @return {@link TypeAdapter} instance.
      */
-    public <T> TypeAdapter<T> create(String className) {
-        TypeAdapter<T> adapter = null;
+    public <T> UtilsTypeAdapter<T> create(String className) {
+        UtilsTypeAdapter<T> adapter = null;
         try {
             adapter = AdapterFinder.findAdapterByName(className);
         } catch (Exception e) {

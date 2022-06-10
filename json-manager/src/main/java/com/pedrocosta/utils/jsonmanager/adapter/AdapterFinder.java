@@ -77,15 +77,15 @@ public class AdapterFinder extends ClassFinder {
      * @param type                  Business type (if exists)
      * @param searchForAnnotation   Search or not for adapters with {@link JsonAdapter} annotation.
      *
-     * @return {@link TypeAdapter} object
+     * @return {@link UtilsTypeAdapter} object
      */
-    public static <T> TypeAdapter<T> findAdapterInPackages(List<Package> packages, String className, String type, boolean searchForAnnotation) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, IOException, URISyntaxException {
-        TypeAdapter<T> adapter = null;
+    public static <T> UtilsTypeAdapter<T> findAdapterInPackages(List<Package> packages, String className, String type, boolean searchForAnnotation) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, IOException, URISyntaxException {
+        UtilsTypeAdapter<T> adapter = null;
         for (Package pack : packages) {
             try {
                 if (searchForAnnotation) {
-                    List<TypeAdapter<T>> annotAdapters = findAllAnnotated(pack.getName());
-                    for (TypeAdapter<T> typeAdapter : annotAdapters) {
+                    List<UtilsTypeAdapter<T>> annotAdapters = findAllAnnotated(pack.getName());
+                    for (UtilsTypeAdapter<T> typeAdapter : annotAdapters) {
                         if (typeAdapter.getClass().getSimpleName()
                                 .startsWith(getAdapterPrefix(className, type))){
                             adapter = typeAdapter;
@@ -109,9 +109,9 @@ public class AdapterFinder extends ClassFinder {
      * @return {@link TypeAdapter} object
      */
     @SuppressWarnings("unchecked")
-    public static <T> TypeAdapter<T> findAdapterByName(String name) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-        TypeAdapter<T> adapter = null;
-        Class<TypeAdapter<T>> adapterClass = (Class<TypeAdapter<T>>) Class.forName(name);
+    public static <T> UtilsTypeAdapter<T> findAdapterByName(String name) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        UtilsTypeAdapter<T> adapter = null;
+        Class<UtilsTypeAdapter<T>> adapterClass = (Class<UtilsTypeAdapter<T>>) Class.forName(name);
         if (adapterClass.getConstructors().length > 0) {
             adapter = adapterClass.getConstructor(new Class[0]).newInstance();
         }
@@ -119,14 +119,15 @@ public class AdapterFinder extends ClassFinder {
     }
 
     /**
-     * Find all {@link TypeAdapter} objects that have
+     * Find all {@link UtilsTypeAdapter} objects that have
      * {@link JsonAdapter} annotation in a list of packages.
      *
      * @param packageName Package name to look.
-     * @return  List of {@link TypeAdapter} objects.
+     * @return  List of {@link UtilsTypeAdapter} objects.
      */
-    public static <T> List<TypeAdapter<T>> findAllAnnotated(String packageName) throws IOException, URISyntaxException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        List<TypeAdapter<T>> adapters = new ArrayList<>();
+    @SuppressWarnings("unchecked")
+    public static <T> List<UtilsTypeAdapter<T>> findAllAnnotated(String packageName) throws IOException, URISyntaxException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        List<UtilsTypeAdapter<T>> adapters = new ArrayList<>();
         List<Package> subPackages = PackageUtils.getSubPackages(packageName);
         for (Package pack : subPackages) {
             List<String> classNames = findClassNamesFromPackage(pack.getName());
@@ -138,7 +139,10 @@ public class AdapterFinder extends ClassFinder {
                     } catch (ClassNotFoundException ignored) {}
 
                     if (adapterClass != null && ClassUtils.hasAnnotation(adapterClass, JsonAdapter.class)) {
-                        adapters.add(findAdapterByName(adapterClass.getName()));
+                        UtilsTypeAdapter<T> adapter = findAdapterByName(adapterClass.getName());
+                        adapter.setTypeClass(
+                                (Class<T>)adapterClass.getAnnotation(JsonAdapter.class).type());
+                        adapters.add(adapter);
                     }
                 }
             }
