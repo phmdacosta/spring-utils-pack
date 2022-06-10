@@ -102,8 +102,10 @@ public class JsonWriter {
      * @param value Value of the field
      */
     public void add(String name, Number value) throws IOException {
-        setName(name);
-        gsonWriter.value(value);
+        if (value != null) {
+            setName(name);
+            gsonWriter.value(value);
+        }
     }
 
     /**

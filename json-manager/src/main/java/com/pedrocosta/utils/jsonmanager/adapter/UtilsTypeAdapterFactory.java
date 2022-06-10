@@ -7,19 +7,20 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.pedrocosta.utils.AppProperties;
+import com.pedrocosta.utils.ClassUtils;
 import com.pedrocosta.utils.PackageUtils;
+import com.pedrocosta.utils.jsonmanager.adapter.annotation.JsonAdapter;
 import com.pedrocosta.utils.output.Log;
-import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 public class UtilsTypeAdapterFactory implements TypeAdapterFactory {
-    private static final String ADAPTER_SUFFIX = "Adapter";
     private static final String PROJECT_PACKAGE = "project.package";
-    private static final String PROP_ADAPTER_SUFFIX = "json.adapter.suffix";
 
     private String packageUri;
+    private boolean useAnnotation;
+    private Map<Class<?>, String> availableAdapterNames;
 
     public String getPackageUri() {
         return packageUri;
@@ -27,6 +28,38 @@ public class UtilsTypeAdapterFactory implements TypeAdapterFactory {
 
     public UtilsTypeAdapterFactory setPackageUri(String packageUri) {
         this.packageUri = packageUri;
+        return this;
+    }
+
+    public UtilsTypeAdapterFactory useAnnotation(boolean useAnnotation) {
+        this.useAnnotation = useAnnotation;
+        return this;
+    }
+
+    public <T> UtilsTypeAdapterFactory addAdapter(Class<T> typeClass, Class<? extends TypeAdapter<T>> adapterClass) {
+        this.addAdapterName(typeClass, adapterClass.getName());
+        return this;
+    }
+
+    public <T> UtilsTypeAdapterFactory addAdapterName(Class<T> typeClass, String adapterClassName) {
+        if (this.availableAdapterNames == null) {
+            this.availableAdapterNames = new HashMap<>();
+        }
+        this.availableAdapterNames.put(typeClass, adapterClassName);
+        return this;
+    }
+
+    public <T> UtilsTypeAdapterFactory addAllAdapters(Map<Class<T>, Class<? extends TypeAdapter<T>>> adapterNames) {
+        for (Map.Entry<Class<T>, Class<? extends TypeAdapter<T>>> entry : adapterNames.entrySet()) {
+            this.addAdapterName(entry.getKey(), entry.getValue().getName());
+        }
+        return this;
+    }
+
+    public <T> UtilsTypeAdapterFactory addAllAdapterNames(Map<Class<T>, String> adapterNames) {
+        for (Map.Entry<Class<T>, String> entry : adapterNames.entrySet()) {
+            this.addAdapterName(entry.getKey(), entry.getValue());
+        }
         return this;
     }
 
@@ -95,19 +128,46 @@ public class UtilsTypeAdapterFactory implements TypeAdapterFactory {
         TypeAdapter<T> adapter = null;
         String classSimpleName = clazz.getSimpleName();
 
-        // Verify properties file
-        String adapterName = getAdapterNameFromProperties(classSimpleName);
-        if (adapterName != null && !adapterName.isEmpty()) {
-            adapter = create(adapterName);
+        // First look at local config
+        if (this.availableAdapterNames != null && !this.availableAdapterNames.isEmpty()) {
+            for (Map.Entry<Class<?>, String> entry : availableAdapterNames.entrySet()) {
+                if (entry.getKey().equals(clazz)) {
+                    adapter = create(entry.getValue());
+                    break;
+                }
+            }
         }
 
         if (adapter == null) {
-            // Look for all subpackages into service
+            // Verify properties file
+            String adapterName = getAdapterNameFromProperties(classSimpleName);
+            if (adapterName != null && !adapterName.isEmpty()) {
+                adapter = create(adapterName);
+            }
+        }
+
+        if (adapter == null) {
+            // For the last, let's look for all packages into project
             String packageName = getAdapterPackage(clazz);
             List<Package> subPackages = PackageUtils.getSubPackages(packageName);
 
+            if (this.useAnnotation) {
+                try {
+                    List<TypeAdapter<T>> adapters = AdapterFinder.findAllAnnotated(packageName);
+                } catch (Exception e) {
+                    Log.warn(this, e.getMessage());
+                }
+            }
+
             while (adapter == null && !"".equals(packageName)) {
-                adapter = findAdapterInPackages(subPackages, classSimpleName, businessType);
+                try {
+                    adapter = AdapterFinder.findAdapterInPackages(subPackages, classSimpleName, businessType);
+                    if (this.useAnnotation && !ClassUtils.hasAnnotation(adapter.getClass(), JsonAdapter.class)) {
+                        adapter = null;
+                    }
+                } catch (Exception e) {
+                    Log.warn(this, e.getMessage());
+                }
                 packageName = PackageUtils.getParentPackageName(packageName);
                 subPackages = PackageUtils.getSubPackages(packageName);
             }
@@ -126,25 +186,11 @@ public class UtilsTypeAdapterFactory implements TypeAdapterFactory {
     public <T> TypeAdapter<T> create(String className) {
         TypeAdapter<T> adapter = null;
         try {
-            adapter = findAdapterByName(className);
+            adapter = AdapterFinder.findAdapterByName(className);
         } catch (Exception e) {
             Log.warn(this, e.getMessage());
         }
         return adapter;
-    }
-
-    /**
-     * Get suffix of adapter's name.
-     * <br>
-     * Adapter's suffix can be set by property '<i><code>json.adapter.suffix</code></i>'
-     * in application properties file.
-     */
-    protected String getAdapterSuffix() {
-        String propAdapterSuffix = AppProperties.get(PROP_ADAPTER_SUFFIX);
-        if (propAdapterSuffix != null) {
-            return propAdapterSuffix;
-        }
-        return ADAPTER_SUFFIX;
     }
 
     /**
@@ -168,55 +214,8 @@ public class UtilsTypeAdapterFactory implements TypeAdapterFactory {
         return packUri;
     }
 
-    /**
-     * Build adapter class name with its package.
-     *
-     * Pattern of adapter's name is: Object class name + type + Adapter
-     * Ex: MyObjectReadAdapter
-     *
-     * @param packageName       Name of package of adapter classes
-     * @param classSimpleName   Class simple name of object to be deserialized
-     * @param type              If we use different types of adapters with different implementation,
-     *                          use this parameter to define which type are looking for     *
-     * @return Adapter complete name with package.
-     */
-    protected final String getAdapterName(String packageName, String classSimpleName, String type) {
-        String typeCap = "";
-
-        if (type != null && !type.isEmpty()) {
-            typeCap = StringUtils.capitalize(type);
-        }
-
-        return packageName + "." + typeCap + classSimpleName
-                + getAdapterSuffix();
-    }
-
     protected final String getAdapterNameFromProperties(String simpleName) {
         return AdapterProperties.get(simpleName);
-    }
-
-    protected <T> TypeAdapter<T> findAdapterInPackages(List<Package> subPackages, String className, String type) {
-        TypeAdapter<T> adapter = null;
-        for (Package pack : subPackages) {
-            adapter = create(getAdapterName(pack.getName(), className, type));
-            if (adapter != null) {
-                break;
-            }
-        }
-        return adapter;
-    }
-
-    protected <T> TypeAdapter<T> findAdapterByName(String name) {
-        TypeAdapter<T> adapter = null;
-        try {
-            Class<TypeAdapter<T>> adapterClass = (Class<TypeAdapter<T>>) Class.forName(name);
-            if (adapterClass.getConstructors().length > 0) {
-                adapter = adapterClass.getConstructor(new Class[0]).newInstance();
-            }
-        } catch (Exception e) {
-            Log.warn(this, e.getMessage());
-        }
-        return adapter;
     }
 
     protected NullPointerException getPackageEmptyException() {
