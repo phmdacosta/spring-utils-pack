@@ -1,6 +1,7 @@
 package com.pedrocosta.springutils.output;
 
 import com.pedrocosta.springutils.AppProperties;
+import com.pedrocosta.springutils.ArrayUtils;
 import com.pedrocosta.springutils.output.utils.Defaults;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
@@ -64,7 +65,7 @@ public final class Messages {
         synchronized (locker) {
             if (source == null) {
                 source = new ResourceBundleMessageSource();
-                if (baseNames != null) {
+                if (!ArrayUtils.isEmpty(baseNames)) {
                     source.setBasenames(baseNames);
                 }
                 source.setUseCodeAsDefaultMessage(true);
