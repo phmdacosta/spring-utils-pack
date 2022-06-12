@@ -19,7 +19,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.pedrocosta.utils.output" level="debug" additivity="true">
+        <Logger name="com.pedrocosta.springutils.output" level="debug" additivity="true">
             <appender-ref ref="fileLogger" level="debug" />
         </Logger>
         <Root level="debug" additivity="false">

@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.pedrocosta.utils</groupId>
-    <artifactId>utils-pack</artifactId>
+    <artifactId>spring-utils-pack</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
