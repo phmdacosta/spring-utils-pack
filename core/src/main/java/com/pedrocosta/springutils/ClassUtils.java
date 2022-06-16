@@ -2,6 +2,12 @@ package com.pedrocosta.springutils;
 
 import java.lang.annotation.Annotation;
 
+/**
+ * Utility class to handle {@link Class}.
+ *
+ * @author Pedro H M da Costa
+ * @version 1.0
+ */
 public class ClassUtils {
     /**
      * Check if class has an annotation.

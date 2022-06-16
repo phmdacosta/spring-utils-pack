@@ -1,5 +1,11 @@
 package com.pedrocosta.springutils;
 
+/**
+ * Util class to handle numbers.
+ *
+ * @author Pedro H. M. da Costa
+ * @version 1.0
+ */
 public class NumberUtils {
     public static boolean isDouble(double num) {
         return !((num % 1) == 0);

@@ -7,6 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+/**
+ * Load properties files.
+ *
+ * @author Pedro H. M. da Costa
+ * @version 1.0
+ */
 public abstract class PropertiesUtils {
     private static final String PROPERTIES_SUFFIX = ".properties";
     private Properties properties;

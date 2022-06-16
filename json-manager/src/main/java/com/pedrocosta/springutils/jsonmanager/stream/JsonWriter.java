@@ -5,6 +5,8 @@ import com.pedrocosta.springutils.jsonmanager.JsonUtils;
 import java.io.IOException;
 
 /**
+ * Handle JSON serialization.
+ *
  * @author Pedro H. M. da Costa
  * @since 1.0
  */

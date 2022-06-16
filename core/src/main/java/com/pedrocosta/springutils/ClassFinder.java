@@ -12,6 +12,12 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+/**
+ * Utility class to find classes by reflection.
+ *
+ * @author Pedro H M da Costa
+ * @version 1.0
+ */
 public class ClassFinder {
 
     private static final String FILE_SEPARATOR = File.separator;

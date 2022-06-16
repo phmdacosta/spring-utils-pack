@@ -4,6 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Util class to handle packages.
+ *
+ * @author Pedro H. M. da Costa
+ * @version 1.0
+ */
 public class PackageUtils {
 
     /**

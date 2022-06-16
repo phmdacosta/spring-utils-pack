@@ -12,6 +12,8 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 /**
+ * Handle JSON deserialization.
+ *
  * @author Pedro H. M. da Costa
  * @since 1.0
  */

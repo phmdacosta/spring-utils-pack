@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+/**
+ * Handle request message locale.
+ *
+ * @author Pedro H M da Costa
+ * @version 1.0
+ */
 public class MessageLocaleResolver extends AcceptHeaderLocaleResolver {
 
     public MessageLocaleResolver() {

@@ -13,6 +13,12 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.security.InvalidParameterException;
 
+/**
+ * Utility class to handle JSON serialization.
+ *
+ * @author Pedro H. M. da Costa
+ * @version 1.0
+ */
 @Component
 public class JsonUtils {
 
