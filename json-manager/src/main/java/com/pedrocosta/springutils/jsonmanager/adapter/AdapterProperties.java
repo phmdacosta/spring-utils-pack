@@ -16,7 +16,7 @@ public class AdapterProperties extends PropertiesUtils {
         synchronized (locker) {
             if (instance == null) {
                 instance = new AdapterProperties();
-                instance.initProperties(propFileName);
+                instance.loadProperties(propFileName);
             }
             return instance;
         }

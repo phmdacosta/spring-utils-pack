@@ -3,7 +3,6 @@ package com.pedrocosta.springutils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-import javax.annotation.Resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -20,8 +19,13 @@ public abstract class PropertiesUtils {
         return properties;
     }
 
-    protected void initProperties(String propFileName) {
+    protected void initProperties() {
         this.properties = new Properties();
+        this.properties.excludePasswords(true);
+    }
+
+    protected void loadProperties(String propFileName) {
+        initProperties();
         try {
             String prefixPropFileName = "application";
             if (propFileName != null && propFileName.endsWith(PROPERTIES_SUFFIX)) {
@@ -46,21 +50,23 @@ public abstract class PropertiesUtils {
 
     private void loadPropertiesFiles(Resource[] resourceFiles) throws IOException {
         for (Resource resource : resourceFiles) {
-            if (!isTestResource(resource)) loadPropertiesFile(resource);
+            if (resource != null) loadPropertiesFile(resource);
         }
     }
 
     private void loadPropertiesFile(Resource resourceFile) throws IOException {
         InputStream resourceStream = resourceFile.getInputStream();
-        properties.load(resourceStream);
+        this.properties.load(resourceStream);
         resourceStream.close();
     }
 
     private Resource[] getTestResources(Resource[] resources) throws IOException {
         List<Resource> testResources = new ArrayList<>();
-        for (Resource resourceFile : resources) {
+        for (int i = 0; i < resources.length; i++) {
+            Resource resourceFile = resources[i];
             if (isTestResource(resourceFile)) {
                 testResources.add(resourceFile);
+                resources[i] = null;
             }
         }
         return testResources.toArray(new Resource[0]);

@@ -1,9 +1,6 @@
 package com.pedrocosta.springutils;
 
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.lang.Nullable;
-
-import java.io.IOException;
 
 /**
  * @author Pedro H M da Costa
@@ -18,7 +15,7 @@ public class AppProperties extends PropertiesUtils {
 
     public static AppProperties instance(String propFileName) {
         AppProperties instance = new AppProperties();
-        instance.initProperties(propFileName);
+        instance.loadProperties(propFileName);
         return instance;
     }
 

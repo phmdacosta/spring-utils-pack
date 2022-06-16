@@ -3,9 +3,12 @@ package com.pedrocosta.springutils.output;
 import com.pedrocosta.springutils.AppProperties;
 import com.pedrocosta.springutils.ArrayUtils;
 import com.pedrocosta.springutils.output.utils.Defaults;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 /**
@@ -17,7 +20,7 @@ import java.util.Locale;
  */
 @Component
 public final class Messages {
-    private static ResourceBundleMessageSource source;
+    private static ReloadableResourceBundleMessageSource source;
     private static final Object locker = new Object();
 
     /**
@@ -28,7 +31,7 @@ public final class Messages {
      * @return String with message
      */
     public static String get(String key, String ... args) {
-        return get(getDefaultLocale(), key, args);
+        return get(getLocale(), key, args);
     }
 
     /**
@@ -40,7 +43,9 @@ public final class Messages {
      * @return String with message
      */
     public static String get(Locale locale, String key, String ... args) {
-        return getSource().getMessage(key, args, locale);
+        ReloadableResourceBundleMessageSource source = getSource();
+        String msg = source.getMessage(key, args, locale);
+        return msg.equals(key) ? source.getMessage(key, args, Defaults.LOCALE) : msg;
     }
 
     /**
@@ -50,7 +55,7 @@ public final class Messages {
      * If property <i>spring.messages.basename</i> not set, it uses
      * @return {@link ResourceBundleMessageSource} object.
      */
-    private static ResourceBundleMessageSource getSource() {
+    private static ReloadableResourceBundleMessageSource getSource() {
         return getSource(AppProperties.get("spring.messages.basename"));
     }
 
@@ -59,39 +64,23 @@ public final class Messages {
      * @param baseNames Path and name of properties files inside
      *                  <i>resources</i> folder. If there is no file to set,
      *                  use {@link Messages#getSource()} instead.
-     * @return {@link ResourceBundleMessageSource} object.
+     * @return {@link ReloadableResourceBundleMessageSource} object.
      */
-    private static ResourceBundleMessageSource getSource(String ... baseNames) {
+    private static ReloadableResourceBundleMessageSource getSource(String ... baseNames) {
         synchronized (locker) {
             if (source == null) {
-                source = new ResourceBundleMessageSource();
+                source = new ReloadableResourceBundleMessageSource();
+                source.setDefaultEncoding(StandardCharsets.UTF_8.name());
+                source.setUseCodeAsDefaultMessage(true);
                 if (!ArrayUtils.isEmpty(baseNames)) {
                     source.setBasenames(baseNames);
                 }
-                source.setUseCodeAsDefaultMessage(true);
-                source.setDefaultLocale(getDefaultLocale());
             }
             return source;
         }
     }
 
-    /**
-     * Get app's default locale set in application.properties file.
-     * If it is not set, the default locale is {@link Locale#ENGLISH}.
-     * @return {@link Locale} object with default locale.
-     */
-    private static Locale getDefaultLocale() {
-        String localProp = AppProperties.get("spring.messages.locale");
-        if (localProp == null || localProp.isEmpty()) {
-            return Defaults.LOCALE;
-        }
-        String[] locInfo = localProp.split("_");
-        if (locInfo.length > 1) {
-            if (locInfo.length > 2) {
-                return new Locale(locInfo[0], locInfo[1], locInfo[2]);
-            }
-            return new Locale(locInfo[0], locInfo[1]);
-        }
-        return new Locale(localProp);
+    private static Locale getLocale() {
+        return LocaleContextHolder.getLocale();
     }
 }
