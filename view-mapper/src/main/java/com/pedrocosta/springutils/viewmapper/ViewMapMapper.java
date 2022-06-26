@@ -11,10 +11,11 @@ public class ViewMapMapper extends CoreViewMapper {
     @Override
     @SuppressWarnings("unchecked")
     protected <T, F> T doMapping(F from, Class<T> resultClass) {
-        if (!(from instanceof Map<?,?> map)) {
+        if (!(from instanceof Map)) {
             throw new IllegalArgumentException("Source object is not a Map");
         }
 
+        Map<?,?> map = (Map<?,?>) from;
         T result = null;
         try { //Try to create
             result = (T) map.getClass().getDeclaredConstructor(new Class[0]).newInstance();

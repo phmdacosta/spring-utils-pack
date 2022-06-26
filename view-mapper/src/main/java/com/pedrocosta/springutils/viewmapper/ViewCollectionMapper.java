@@ -11,10 +11,11 @@ public class ViewCollectionMapper extends CoreViewMapper {
     @Override
     @SuppressWarnings("unchecked")
     protected <T, F> T doMapping(F from, Class<T> resultClass) {
-        if (!(from instanceof Collection<?> col)) {
+        if (!(from instanceof Collection)) {
             throw new IllegalArgumentException("Source is not a Collection");
         }
 
+        Collection<?> col = (Collection<?>) from;
         T result = null;
         try { //Try to create
             result = (T) col.getClass().getDeclaredConstructor(new Class[0]).newInstance();

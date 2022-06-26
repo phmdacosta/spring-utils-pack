@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -75,13 +76,13 @@ public class ViewMapperTest {
         //Assertions
         for (TestChildView mappedChildView : mappedView.getChildren()) {
             Collection<?> found = model.getChildren().stream().filter(
-                    childModel -> childModel.getName().equals(mappedChildView.getName())).toList();
+                    childModel -> childModel.getName().equals(mappedChildView.getName())).collect(Collectors.toList());
             assertFalse(found.isEmpty());
         }
 
         for (TestChildModel mappedChildModel : mappedModel.getChildren()) {
             Collection<?> found = view.getChildren().stream().filter(
-                    _child -> _child.getName().equals(mappedChildModel.getName())).toList();
+                    _child -> _child.getName().equals(mappedChildModel.getName())).collect(Collectors.toList());
             assertFalse(found.isEmpty());
         }
 
@@ -126,7 +127,7 @@ public class ViewMapperTest {
         assertEquals(view.getChildView().getName(), model.getChild().getName());
         for (TestChildView childView : view.getChildrenView()) {
             Collection<?> found = model.getChildren().stream().filter(
-                    childModel -> childModel.getName().equals(childView.getName())).toList();
+                    childModel -> childModel.getName().equals(childView.getName())).collect(Collectors.toList());
             assertFalse(found.isEmpty());
         }
     }
@@ -156,7 +157,7 @@ public class ViewMapperTest {
         assertEquals(model.getChild().getName(), view.getChildView().getName());
         for (TestChildModel childModel : model.getChildren()) {
             Collection<?> found = view.getChildrenView().stream().filter(
-                    childView -> childView.getName().equals(childModel.getName())).toList();
+                    childView -> childView.getName().equals(childModel.getName())).collect(Collectors.toList());
             assertFalse(found.isEmpty());
         }
     }
@@ -192,13 +193,13 @@ public class ViewMapperTest {
         //Assertions
         for (TestChildView mappedChildView : mappedView.getChildrenView()) {
             Collection<?> found = model.getChildren().stream().filter(
-                    childModel -> childModel.getName().equals(mappedChildView.getName())).toList();
+                    childModel -> childModel.getName().equals(mappedChildView.getName())).collect(Collectors.toList());
             assertFalse(found.isEmpty());
         }
 
         for (TestChildModel mappedChildModel : mappedModel.getChildren()) {
             Collection<?> found = view.getChildrenView().stream().filter(
-                    _child -> _child.getName().equals(mappedChildModel.getName())).toList();
+                    _child -> _child.getName().equals(mappedChildModel.getName())).collect(Collectors.toList());
             assertFalse(found.isEmpty());
         }
 
