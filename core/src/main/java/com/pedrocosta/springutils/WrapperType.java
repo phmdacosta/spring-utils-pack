@@ -1,6 +1,4 @@
-package com.pedrocosta.springutils.jsonmanager.utils;
-
-import com.pedrocosta.springutils.output.Log;
+package com.pedrocosta.springutils;
 
 import java.util.Arrays;
 
@@ -12,7 +10,8 @@ public enum WrapperType {
     INTEGER(Integer.class, 0),
     LONG(Long.class, 0L),
     FLOAT(Float.class, 0.0),
-    DOUBLE(Double.class, 0.0D);
+    DOUBLE(Double.class, 0.0D),
+    STRING(String.class, null);
 
     final Class<?> clazz;
     final Object initValue;
@@ -36,13 +35,6 @@ public enum WrapperType {
     @SuppressWarnings("unchecked")
     public static <T> T init(Class<T> clazz) {
         WrapperType wrapperType = get(clazz);
-        if (wrapperType != null) {
-            try {
-                return (T) wrapperType.initValue;
-            } catch (ClassCastException e) {
-                Log.error(wrapperType, e);
-            }
-        }
-        return null;
+        return (T) wrapperType.initValue;
     }
 }

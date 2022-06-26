@@ -23,4 +23,8 @@ public class ClassUtils {
         } catch (NullPointerException ignored) {}
         return has;
     }
+
+    public static boolean isPrimitive(Class<?> clazz) {
+        return WrapperType.is(clazz) || clazz.isPrimitive();
+    }
 }

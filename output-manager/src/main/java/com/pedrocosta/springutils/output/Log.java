@@ -24,7 +24,17 @@ public final class Log {
      * @param msg   The message to log.
      */
     public static void trace(Object obj, String msg) {
-        log(TRACE, obj, msg, null);
+        trace(obj.getClass(), msg);
+    }
+
+    /**
+     * Log trace messages.
+     *
+     * @param clazz Context of the log.
+     * @param msg   The message to log.
+     */
+    public static void trace(Class<?> clazz, String msg) {
+        log(TRACE, clazz, msg, null);
     }
 
     /**
@@ -34,7 +44,17 @@ public final class Log {
      * @param msg   The message to log.
      */
     public static void debug(Object obj, String msg) {
-        log(DEBUG, obj, msg, null);
+        debug(obj.getClass(), msg);
+    }
+
+    /**
+     * Log debug messages.
+     *
+     * @param clazz Context of the log.
+     * @param msg   The message to log.
+     */
+    public static void debug(Class<?> clazz, String msg) {
+        log(DEBUG, clazz, msg, null);
     }
 
     /**
@@ -44,7 +64,17 @@ public final class Log {
      * @param msg   The message to log.
      */
     public static void info(Object obj, String msg) {
-        log(INFO, obj, msg, null);
+        info(obj.getClass(), msg);
+    }
+
+    /**
+     * Log information messages.
+     *
+     * @param clazz Context of the log.
+     * @param msg   The message to log.
+     */
+    public static void info(Class<?> clazz, String msg) {
+        log(INFO, clazz, msg, null);
     }
 
     /**
@@ -54,7 +84,17 @@ public final class Log {
      * @param msg   The message to log.
      */
     public static void warn(Object obj, String msg) {
-        log(WARN, obj, msg, null);
+        warn(obj.getClass(), msg);
+    }
+
+    /**
+     * Log warning messages.
+     *
+     * @param clazz Context of the log.
+     * @param msg   The message to log.
+     */
+    public static void warn(Class<?> clazz, String msg) {
+        log(WARN, clazz, msg, null);
     }
 
     /**
@@ -64,7 +104,17 @@ public final class Log {
      * @param msg   The message to log.
      */
     public static void error(Object obj, String msg) {
-        error(obj, msg, null);
+        error(obj.getClass(), msg);
+    }
+
+    /**
+     * Log error messages.
+     *
+     * @param clazz Context of the log.
+     * @param msg   The message to log.
+     */
+    public static void error(Class<?> clazz, String msg) {
+        error(clazz, msg, null);
     }
 
     /**
@@ -74,7 +124,17 @@ public final class Log {
      * @param throwable {@link Throwable} object of error.
      */
     public static void error(Object obj, Throwable throwable) {
-        error(obj, null, throwable);
+        error(obj.getClass(), throwable);
+    }
+
+    /**
+     * Log error of a {@link Throwable}'s message.
+     *
+     * @param clazz     Context of the log.
+     * @param throwable {@link Throwable} object of error.
+     */
+    public static void error(Class<?> clazz, Throwable throwable) {
+        error(clazz, null, throwable);
     }
 
     /**
@@ -87,35 +147,56 @@ public final class Log {
      * @param throwable {@link Throwable} object of error.
      */
     public static void error(Object obj, String msg, Throwable throwable) {
-        if (msg != null)
-            log(ERROR, obj, msg, null);
-        else if (throwable != null)
-            log(ERROR, obj, null, throwable);
+        error(obj.getClass(), msg, throwable);
     }
 
-    private static Logger getLogger(Object obj) {
-        return LogManager.getLogger(obj);
+    /**
+     * Log error with custom message or {@link Throwable}'s message.
+     * If both custom message and {@link Throwable} object are set,
+     * it will prioritize custom message.
+     *
+     * @param clazz     Context of the log.
+     * @param msg       The message to log.
+     * @param throwable {@link Throwable} object of error.
+     */
+    public static void error(Class<?> clazz, String msg, Throwable throwable) {
+        if (msg != null)
+            log(ERROR, clazz, msg, null);
+        else if (throwable != null)
+            log(ERROR, clazz, null, throwable);
+    }
+
+    private static Logger getLogger(String name) {
+        return LogManager.getLogger(name);
     }
 
     private static void log(int type, Object obj, String msg, Throwable throwable) {
+        log(type, obj.getClass().getSimpleName(), msg, throwable);
+    }
+
+    private static void log(int type, Class<?> clazz, String msg, Throwable throwable) {
+        log(type, clazz.getSimpleName(), msg, throwable);
+    }
+
+    private static void log(int type, String name, String msg, Throwable throwable) {
         switch(type) {
             case TRACE:
-                getLogger(obj).trace(msg);
+                getLogger(name).trace(msg);
                 break;
             case DEBUG:
-                getLogger(obj).debug(msg);
+                getLogger(name).debug(msg);
                 break;
             case INFO:
-                getLogger(obj).info(msg);
+                getLogger(name).info(msg);
                 break;
             case WARN:
-                getLogger(obj).warn(msg);
+                getLogger(name).warn(msg);
                 break;
             case ERROR:
                 if (throwable == null)
-                    getLogger(obj).error(msg);
+                    getLogger(name).error(msg);
                 else
-                    getLogger(obj).error(obj, throwable);
+                    getLogger(name).error(name, throwable);
                 break;
             default:
                 throw new IllegalArgumentException("Wrong log type");
