@@ -4,7 +4,7 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.MalformedJsonException;
 import com.pedrocosta.springutils.NumberUtils;
 import com.pedrocosta.springutils.jsonmanager.JsonUtils;
-import com.pedrocosta.springutils.jsonmanager.utils.WrapperType;
+import com.pedrocosta.springutils.WrapperType;
 import com.pedrocosta.springutils.output.Log;
 
 import java.io.IOException;

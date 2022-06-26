@@ -19,6 +19,7 @@
         <module>core</module>
         <module>json-manager</module>
         <module>output-manager</module>
+        <module>view-mapper</module>
     </modules>
 
     <properties>
