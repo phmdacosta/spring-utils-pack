@@ -9,8 +9,7 @@ import org.springframework.util.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MapperUtils {
     public static <T> T getInstance(final Class<T> clazz) {
@@ -49,10 +48,16 @@ public class MapperUtils {
     }
 
     public static Map<Method, Method> getMappedMethods(Class<?> fromClass, Class<?> toClass) {
-        Map<Method, Method> mappedFields = new HashMap<>();
+        Map<Method, Method> mappedMethods = new HashMap<>();
 
-        Method[] keyMethods = toClass.getDeclaredMethods();
-        for (Method keyMethod : keyMethods) {
+        //If any class is null, return empty map
+        if (fromClass == null || toClass == null) {
+            return mappedMethods;
+        }
+
+        List<Method> keyMethodList = new ArrayList<>(Arrays.asList(toClass.getDeclaredMethods()));
+
+        for (Method keyMethod : keyMethodList) {
             Annotation mappingAnnot = null;
             if (hasViewAnnotation(toClass)) {
                 if (hasMappingAnnotation(keyMethod))
@@ -75,11 +80,24 @@ public class MapperUtils {
                     valueFieldName = findFieldNameWithAnnotations(fromClass, valueFieldName);
                 }
                 //Value method must be getter
-                mappedFields.put(keyMethod, getter(fromClass, fromClass.getDeclaredField(valueFieldName)));
+                mappedMethods.put(keyMethod, getter(fromClass, fromClass.getDeclaredField(valueFieldName)));
             } catch (NoSuchFieldException | NullPointerException ignored) {}
         }
 
-        return mappedFields;
+        //Handle super class methods, if exists
+        if (hasSuperClass(toClass) || hasSuperClass(fromClass)) {
+            Class<?> toSuperClass = hasSuperClass(toClass) ? toClass.getSuperclass() : toClass;
+            Class<?> fromSuperClass = hasSuperClass(fromClass) ? fromClass.getSuperclass() : fromClass;
+
+            Map<Method, Method> superMethods = getMappedMethods(fromSuperClass, toSuperClass);
+            mappedMethods.putAll(superMethods);
+        }
+
+        return mappedMethods;
+    }
+
+    public static boolean hasSuperClass(Class<?> clazz) {
+        return clazz != null && clazz.getSuperclass() != null && !Object.class.equals(clazz.getSuperclass());
     }
 
     public static String findFieldNameWithAnnotations(Class<?> classToSearch, String fieldName) {
@@ -253,7 +271,7 @@ public class MapperUtils {
     }
 
     public static Class<?> getTypeOfMethod(Method method) {
-        return void.class.equals(method.getReturnType()) ? method.getParameterTypes()[0] : method.getReturnType();
+        return method.getParameterTypes().length > 0 ? method.getParameterTypes()[0] : method.getReturnType();
     }
 
     public static Class<?>[] getGenericTypesOfField(Field field) {
@@ -308,7 +326,7 @@ public class MapperUtils {
         Type[] types = new Type[1];
 
         Type methodGenericType = method.getGenericReturnType();
-        if (void.class.equals(methodGenericType)) {
+        if (method.getGenericParameterTypes().length > 0) {
             methodGenericType = method.getGenericParameterTypes()[0];
         }
 

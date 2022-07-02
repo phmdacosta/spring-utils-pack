@@ -10,8 +10,19 @@ import java.util.Map;
 
 public class ViewModelMapper extends CoreViewMapper {
 
+    @Override
     protected <T,F> T doMapping(F from, Class<T> resultClass) {
-        return doMappingByMethod(from, resultClass);
+        T result = null;
+
+        try {
+            result = MapperUtils.getInstance(resultClass);
+            Class<?> fromClass = from.getClass();
+            doMapping(from, fromClass, result, resultClass);
+        } catch (Exception e) {
+            Log.warn(ViewMapper.class, e.getMessage());
+        }
+
+        return result;
     }
 
     protected <T,F> T doMappingByField(F from, Class<T> resultClass) {
@@ -45,18 +56,18 @@ public class ViewModelMapper extends CoreViewMapper {
         return result;
     }
 
-    protected <T,F> T doMappingByMethod(F from, Class<T> resultClass) {
-        T result = null;
+    protected <T,F> void doMapping(F from, Class<?> fromClass, T result, Class<?> resultClass) {
+        doMappingByMethod(from, fromClass, result, resultClass);
+    }
 
-        try {
-            Class<?> fromClass = from.getClass();
-            result = MapperUtils.getInstance(resultClass);
-            Map<Method, Method> mappedFields = MapperUtils.getMappedMethods(fromClass, resultClass);
+    private <T, F> void doMappingByMethod(F from, Class<?> fromClass, T result, Class<?> resultClass) {
+        Map<Method, Method> mappedMethods = MapperUtils.getMappedMethods(fromClass, resultClass);
 
-            for (Map.Entry<Method, Method> entry : mappedFields.entrySet()) {
-                // Retrieve setter method
-                Method resultSetter = entry.getKey();
-                if (resultSetter != null) {
+        for (Map.Entry<Method, Method> entry : mappedMethods.entrySet()) {
+            // Retrieve setter method
+            Method resultSetter = entry.getKey();
+            if (resultSetter != null) {
+                try {
                     // Retrieve getter from source object
                     Method fromGetter = entry.getValue();
                     Object fieldValue = fromGetter != null ? fromGetter.invoke(from) : null;
@@ -64,13 +75,12 @@ public class ViewModelMapper extends CoreViewMapper {
                     if (fieldValue != null && !ClassUtils.isPrimitive(fieldValue.getClass())) {
                         fieldValue = loadMapper(resultSetter).map(fieldValue, resultSetter);
                     }
+
                     resultSetter.invoke(result, fieldValue); // Do the set
+                } catch (Exception e) {
+                    Log.warn(ViewMapper.class, e.getMessage());
                 }
             }
-        } catch (Exception e) {
-            Log.warn(ViewMapper.class, e.getMessage());
         }
-
-        return result;
     }
 }

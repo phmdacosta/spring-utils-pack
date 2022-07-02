@@ -1,10 +1,9 @@
 package com.pedrocosta.springutils.viewmapper;
 
-import com.pedrocosta.springutils.output.Log;
 import com.pedrocosta.springutils.viewmapper.resolver.CollectionTypeResolver;
 import com.pedrocosta.springutils.viewmapper.resolver.TypeResolver;
+import com.pedrocosta.springutils.viewmapper.resolver.instance.CollectionInstanceResolverFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 public class ViewCollectionMapper extends CoreViewMapper {
@@ -16,13 +15,7 @@ public class ViewCollectionMapper extends CoreViewMapper {
         }
 
         Collection<?> col = (Collection<?>) from;
-        T result = null;
-        try { //Try to create
-            result = (T) col.getClass().getDeclaredConstructor(new Class[0]).newInstance();
-        } catch (InstantiationException | NoSuchMethodException |
-                 InvocationTargetException | IllegalAccessException e) {
-            Log.error(this, e);
-        }
+        T result = (T) CollectionInstanceResolverFactory.create(from.getClass()).newInstance(from.getClass());
 
         if (col.isEmpty()) {
             return result;

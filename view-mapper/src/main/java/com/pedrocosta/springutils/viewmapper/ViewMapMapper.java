@@ -5,6 +5,7 @@ import com.pedrocosta.springutils.viewmapper.resolver.MapTypeResolver;
 import com.pedrocosta.springutils.viewmapper.resolver.TypeResolver;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ViewMapMapper extends CoreViewMapper {
@@ -16,12 +17,13 @@ public class ViewMapMapper extends CoreViewMapper {
         }
 
         Map<?,?> map = (Map<?,?>) from;
-        T result = null;
+        T result;
         try { //Try to create
             result = (T) map.getClass().getDeclaredConstructor(new Class[0]).newInstance();
-        } catch (InstantiationException | NoSuchMethodException |
-                 InvocationTargetException | IllegalAccessException e) {
+            ((Map<Object,Object>) result).clear();
+        } catch (Exception e) {
             Log.error(this, e);
+            result = (T) new HashMap<>();
         }
 
         if (map.isEmpty()) {
@@ -29,11 +31,9 @@ public class ViewMapMapper extends CoreViewMapper {
         }
 
         //Do the mapping of elements
-        if (result != null) {
-            for (Map.Entry<?,?> entry : map.entrySet()) {
-                ((Map<Object,Object>) result)
-                        .put(entry.getKey(), loadMapper(resultClass).map(entry.getValue(), resultClass));
-            }
+        for (Map.Entry<?,?> entry : map.entrySet()) {
+            ((Map<Object,Object>) result)
+                    .put(entry.getKey(), loadMapper(resultClass).map(entry.getValue(), resultClass));
         }
 
         return result;
