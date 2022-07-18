@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>view-mapper</artifactId>
+    <artifactId>mail-sender</artifactId>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -21,6 +21,20 @@
             <groupId>com.pedrocosta.utils</groupId>
             <artifactId>output-manager</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.icegreen</groupId>
+            <artifactId>greenmail-junit5</artifactId>
+            <version>1.6.9</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
         </dependency>
     </dependencies>
 

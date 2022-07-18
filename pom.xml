@@ -20,6 +20,7 @@
         <module>json-manager</module>
         <module>output-manager</module>
         <module>view-mapper</module>
+        <module>mail-sender</module>
     </modules>
 
     <properties>
