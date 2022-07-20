@@ -47,7 +47,7 @@ public class MapperUtils {
         return mappedFields;
     }
 
-    public static Map<Method, Method> getMappedMethods(Class<?> fromClass, Class<?> toClass) {
+    public static Map<Method, Method> getMappedMethods(TypeMapper<?,?> mapper, Class<?> fromClass, Class<?> toClass) {
         Map<Method, Method> mappedMethods = new HashMap<>();
 
         //If any class is null, return empty map
@@ -89,7 +89,7 @@ public class MapperUtils {
             Class<?> toSuperClass = hasSuperClass(toClass) ? toClass.getSuperclass() : toClass;
             Class<?> fromSuperClass = hasSuperClass(fromClass) ? fromClass.getSuperclass() : fromClass;
 
-            Map<Method, Method> superMethods = getMappedMethods(fromSuperClass, toSuperClass);
+            Map<Method, Method> superMethods = getMappedMethods(mapper, fromSuperClass, toSuperClass);
             mappedMethods.putAll(superMethods);
         }
 

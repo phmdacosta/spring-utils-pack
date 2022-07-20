@@ -7,11 +7,11 @@ import com.pedrocosta.springutils.viewmapper.resolver.TypeResolver;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public abstract class CoreViewMapper {
+public abstract class TypeMapper<FROM, TO> {
 
     private ViewMapperBuilder mapperBuilder;
 
-    public CoreViewMapper setMapperBuilder(ViewMapperBuilder mapperBuilder) {
+    public TypeMapper<FROM, TO> setMapperBuilder(ViewMapperBuilder mapperBuilder) {
         this.mapperBuilder = mapperBuilder;
         return this;
     }
@@ -25,21 +25,13 @@ public abstract class CoreViewMapper {
      *
      * @param from      Object to map
      * @param toClass   Class to the target result
-     * @param <T>   Type of the result
-     * @param <F>   Type of the object to map
      */
     @SuppressWarnings("unchecked")
-    public <T,F> T map(F from, Class<T> toClass) {
+    public TO doMapping(FROM from, Class<TO> toClass) {
         if (!this.isValidParameters(from, toClass)) {
             return null;
         }
-        if (from.getClass().equals(toClass) && from instanceof Cloneable) {
-            try { // Try to clone, if can't do the mapping
-                T cloned = (T) from.getClass().getDeclaredMethod("clone", new Class[0]).invoke(from);
-                if (cloned != null) return cloned;
-            } catch (Exception ignored) {}
-        }
-        return this.doMapping(from, toClass);
+        return this.map(from, toClass);
     }
 
     /**
@@ -50,16 +42,14 @@ public abstract class CoreViewMapper {
      *
      * @param from      Object to map
      * @param toField   Field to save result
-     * @param <T>   Type of the result
-     * @param <F>   Type of the object to map
      */
     @SuppressWarnings("unchecked")
-    public <T,F> T map(F from, Field toField) {
+    public TO doMapping(FROM from, Field toField) {
         if (!this.isValidParameters(from, toField)) {
             return null;
         }
-        Class<T> toClass = (Class<T>) this.getTypeResolver().getType(toField);
-        return this.map(from, toClass);
+        Class<TO> toClass = (Class<TO>) this.getTypeResolver().getType(toField);
+        return this.doMapping(from, toClass);
     }
 
     /**
@@ -70,16 +60,14 @@ public abstract class CoreViewMapper {
      *
      * @param from      Object to map
      * @param toMethod  Method to save result
-     * @param <T>   Type of the result
-     * @param <F>   Type of the object to map
      */
     @SuppressWarnings("unchecked")
-    public <T,F> T map(F from, Method toMethod) {
+    public TO doMapping(FROM from, Method toMethod) {
         if (!this.isValidParameters(from, toMethod)) {
             return null;
         }
-        Class<T> toClass = (Class<T>) this.getTypeResolver().getType(toMethod);
-        return this.map(from, toClass);
+        Class<TO> toClass = (Class<TO>) this.getTypeResolver().getType(toMethod);
+        return this.doMapping(from, toClass);
     }
 
     protected <T,F> boolean isValidParameters(F from, Class<T> clazz) {
@@ -94,24 +82,28 @@ public abstract class CoreViewMapper {
         return from != null && method != null;
     }
 
-    protected CoreViewMapper loadMapper(Field field) {
-        return loadMapper(MapperUtils.getTypeOfField(field));
+    protected TypeMapper<?,?> loadMapper(Class<?> fromClass, Field field) {
+        return loadMapper(fromClass, MapperUtils.getTypeOfField(field));
     }
 
-    protected CoreViewMapper loadMapper(Method method) {
-        return loadMapper(MapperUtils.getTypeOfMethod(method));
+    protected TypeMapper<?,?> loadMapper(Class<?> fromClass, Method method) {
+        return loadMapper(fromClass, MapperUtils.getTypeOfMethod(method));
     }
 
-    protected <T> CoreViewMapper loadMapper(Class<T> clazz) {
+    protected TypeMapper<?,?> loadMapper(Class<?> fromClass, Class<?> toClass) {
         if (this.getMapperBuilder() == null)
             this.setMapperBuilder(new ViewMapperBuilder());
 
-        return this.getMapperBuilder().create(clazz);
+        return this.getMapperBuilder().create(fromClass, toClass);
     }
 
     protected TypeResolver getTypeResolver() {
         return new DefaultTypeResolver();
     }
 
-    protected abstract <T,F> T doMapping(F from, Class<T> resultClass);
+    protected TO map(FROM from, Class<TO> resultClass) {
+        return map(from);
+    }
+
+    protected abstract TO map(FROM from);
 }
