@@ -8,20 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MapMapper<FROM, TO> extends TypeMapper<FROM, TO> {
-    private Class<TO> resultClass;
 
     @Override
+    @SuppressWarnings("unchecked")
     protected TO map(FROM from, Class<TO> resultClass) {
         if (!(from instanceof Map)) {
             throw new IllegalArgumentException("Source object is not a Map");
         }
-        this.resultClass = resultClass;
-        return map(from);
-    }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected TO map(FROM from) {
         Map<?,?> map = (Map<?,?>) from;
         TO result;
         try { //Try to create

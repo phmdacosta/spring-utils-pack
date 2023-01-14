@@ -5,8 +5,7 @@ import com.pedrocosta.springutils.viewmapper.test.obj.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -268,5 +267,135 @@ public class ViewMapperTest {
                     .findFirst().orElse(null);
             assertNotNull(found);
         }
+    }
+
+    @Test
+    public void test_viewCollectionMapping_fromList_commonFields_success() throws Exception {
+        final List<TestModel> modelList = generateModelList();
+
+        Collection<TestView> viewCol = viewMapper.map(modelList, TestView.class);
+
+        int countEquals = 0;
+        for (TestView view : viewCol) {
+            for (TestModel model : modelList) {
+                if (view.getName().equals(model.getName())
+                        && view.isBool() == model.isBool()
+                        && view.getChild().getName().equals(model.getChild().getName())) {
+                    countEquals++;
+                }
+            }
+        }
+
+        assertEquals(countEquals, viewCol.size());
+    }
+
+    @Test
+    public void test_viewCollectionMapping_fromSet_commonFields_success() throws Exception {
+        final Set<TestModel> modelSet = new HashSet<>(generateModelList());
+
+        Collection<TestView> viewCol = viewMapper.map(modelSet, TestView.class);
+
+        int countEquals = 0;
+        for (TestView view : viewCol) {
+            for (TestModel model : modelSet) {
+                if (view.getName().equals(model.getName())
+                        && view.isBool() == model.isBool()
+                        && view.getChild().getName().equals(model.getChild().getName())) {
+                    countEquals++;
+                }
+            }
+        }
+
+        assertEquals(countEquals, viewCol.size());
+    }
+
+    @Test
+    public void test_modelCollectionMapping_fromList_commonFields_success() throws Exception {
+        final List<TestView> viewList = generateViewList();
+
+        Collection<TestModel> viewCol = viewMapper.map(viewList, TestModel.class);
+
+        int countEquals = 0;
+        for (TestModel model : viewCol) {
+            for (TestView view : viewList) {
+                if (model.getName().equals(view.getName())
+                        && model.isBool() == view.isBool()
+                        && model.getChild().getName().equals(view.getChild().getName())) {
+                    countEquals++;
+                }
+            }
+        }
+
+        assertEquals(countEquals, viewCol.size());
+    }
+
+    @Test
+    public void test_modelCollectionMapping_fromSet_commonFields_success() throws Exception {
+        final Set<TestView> viewSet = new HashSet<>(generateViewList());
+
+        Collection<TestModel> modelCol = viewMapper.map(viewSet, TestModel.class);
+
+        int countEquals = 0;
+        for (TestModel model : modelCol) {
+            for (TestView view : viewSet) {
+                if (model.getName().equals(view.getName())
+                        && model.isBool() == view.isBool()
+                        && model.getChild().getName().equals(view.getChild().getName())) {
+                    countEquals++;
+                }
+            }
+        }
+
+        assertEquals(countEquals, modelCol.size());
+    }
+
+    private List<TestModel> generateModelList() {
+        final TestModel model1 = new TestModel();
+        model1.setId(1);
+        model1.setName("Model 1 Name");
+        model1.setBool(true);
+
+        final TestChildModel child1 = new TestChildModel();
+        child1.setName("Child 1 Name");
+        model1.setChild(child1);
+
+        final TestModel model2 = new TestModel();
+        model2.setId(1);
+        model2.setName("Model 2 Name");
+        model2.setBool(true);
+
+        final TestChildModel child2 = new TestChildModel();
+        child2.setName("Child 2 Name");
+        model2.setChild(child2);
+
+        List<TestModel> modelList = new ArrayList<>();
+        modelList.add(model1);
+        modelList.add(model2);
+
+        return modelList;
+    }
+
+    private List<TestView> generateViewList() {
+        TestView view1 = new TestView();
+        view1.setName("Model 1 Name");
+        view1.setBool(true);
+
+        TestChildView child1 = new TestChildView();
+        child1.setName("Child 1 Name");
+        view1.setChild(child1);
+
+        TestView view2 = new TestView();
+        view2.setName("Model 2 Name");
+        view2.setBool(true);
+
+        TestChildView child2 = new TestChildView();
+        child2.setName("Child 2 Name");
+        view2.setChild(child2);
+
+        List<TestView> viewList = new ArrayList<>();
+        viewList.add(view1);
+        viewList.add(view2);
+
+        return viewList;
     }
 }

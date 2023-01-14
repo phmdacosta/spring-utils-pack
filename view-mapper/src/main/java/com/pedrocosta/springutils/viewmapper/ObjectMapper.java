@@ -9,14 +9,8 @@ import java.util.Map;
 
 public class ObjectMapper extends TypeMapper<Object, Object> {
 
-    private Class<Object> resultClass;
-
+    @Override
     protected Object map(Object from, Class<Object> resultClass) {
-        this.resultClass = resultClass;
-        return map(from);
-    }
-
-    protected Object map(Object from) {
         Object result = null;
         try {
             result = MapperUtils.getInstance(resultClass);

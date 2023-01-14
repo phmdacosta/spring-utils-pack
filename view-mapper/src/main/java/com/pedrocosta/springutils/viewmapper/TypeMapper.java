@@ -26,7 +26,6 @@ public abstract class TypeMapper<FROM, TO> {
      * @param from      Object to map
      * @param toClass   Class to the target result
      */
-    @SuppressWarnings("unchecked")
     public TO doMapping(FROM from, Class<TO> toClass) {
         if (!this.isValidParameters(from, toClass)) {
             return null;
@@ -101,9 +100,5 @@ public abstract class TypeMapper<FROM, TO> {
         return new DefaultTypeResolver();
     }
 
-    protected TO map(FROM from, Class<TO> resultClass) {
-        return map(from);
-    }
-
-    protected abstract TO map(FROM from);
+    protected abstract TO map(FROM from, Class<TO> resultClass);
 }
