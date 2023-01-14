@@ -1,7 +1,12 @@
 package com.pedrocosta.springutils;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.lang.Nullable;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -11,6 +16,26 @@ import java.util.stream.Collectors;
  * @version 1.0
  */
 public class PackageUtils {
+
+    public static Package getProjectPackage(ApplicationContext context) throws ClassNotFoundException {
+        Package pack = null;
+
+        Map<String, Object> candidates = context.getBeansWithAnnotation(SpringBootApplication.class);
+        if (!candidates.isEmpty()) {
+            pack = candidates.values().toArray()[0].getClass().getPackage();
+        } else {
+            String packageName = context.getEnvironment().getProperty("project.package");
+            if (packageName != null) {
+                pack = getPackage(packageName);
+            }
+        }
+
+        if (pack == null) {
+            throw new ClassNotFoundException("Could not find any application class annotated with SpringBootApplication or 'project.package' in property files.");
+        }
+
+        return pack;
+    }
 
     /**
      * Get sub packages from a super one.
