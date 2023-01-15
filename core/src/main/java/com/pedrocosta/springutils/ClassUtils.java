@@ -1,5 +1,7 @@
 package com.pedrocosta.springutils;
 
+import org.springframework.beans.BeanUtils;
+
 import java.lang.annotation.Annotation;
 
 /**
@@ -24,7 +26,22 @@ public class ClassUtils {
         return has;
     }
 
+    @Deprecated
     public static boolean isPrimitive(Class<?> clazz) {
         return WrapperType.is(clazz) || clazz.isPrimitive();
+    }
+
+    public static boolean isSimpleProperty(Class<?> clazz) {
+        return BeanUtils.isSimpleProperty(clazz);
+    }
+
+    public static boolean hasDeclaredMethod(Class<?> clazz, String methodName) {
+        boolean has = true;
+        try {
+            clazz.getDeclaredMethod(methodName, Object.class);
+        } catch (NoSuchMethodException e) {
+            has = false;
+        }
+        return has;
     }
 }
