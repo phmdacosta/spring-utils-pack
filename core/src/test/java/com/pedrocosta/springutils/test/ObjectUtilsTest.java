@@ -4,6 +4,11 @@ import com.pedrocosta.springutils.ObjectUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -16,7 +21,12 @@ public class ObjectUtilsTest {
     public void setup() throws Exception {
         _myBasicObject = new MyBasicObject("abc", "def", 1, 2, 3, 4, true, false);
         String[] strArr = {"str", "ttt"};
-        _myChildObject = new MyChildObject(_myBasicObject, new MyInnerObject(strArr, 1.0D));
+        List<String> strList = Arrays.asList(strArr);
+        Map<Integer, String> strMap = new HashMap<>();
+        for (int i = 0; i < strArr.length; i++) {
+            strMap.put(i+1, strArr[i]);
+        }
+        _myChildObject = new MyChildObject(_myBasicObject, new MyInnerObject(strArr, 1.0D, strList, strMap));
     }
 
     @Test
@@ -37,7 +47,12 @@ public class ObjectUtilsTest {
         assertTrue(ObjectUtils.equals(this._myChildObject, this._myChildObject));
         MyBasicObject myBasicObject = new MyBasicObject("abc", "def", 1, 2, 3, 4, true, false);
         String[] strArr = {"str", "ttt"};
-        MyChildObject myChildObject = new MyChildObject(myBasicObject, new MyInnerObject(strArr, 1.0D));
+        List<String> strList = Arrays.asList(strArr);
+        Map<Integer, String> strMap = new HashMap<>();
+        for (int i = 0; i < strArr.length; i++) {
+            strMap.put(i+1, strArr[i]);
+        }
+        MyChildObject myChildObject = new MyChildObject(myBasicObject, new MyInnerObject(strArr, 1.0D, strList, strMap));
         assertTrue(ObjectUtils.equals(myChildObject, this._myChildObject));
     }
 
@@ -49,7 +64,12 @@ public class ObjectUtilsTest {
 
         myBasicObject = new MyBasicObject("abc", "def", 1, 2, 3, 4, true, false);
         String[] strArr = {"int", "ttt"};
-        myChildObject = new MyChildObject(myBasicObject, new MyInnerObject(strArr, 1.0D));
+        List<String> strList = Arrays.asList(strArr);
+        Map<Integer, String> strMap = new HashMap<>();
+        for (int i = 0; i < strArr.length; i++) {
+            strMap.put(i+1, strArr[i]);
+        }
+        myChildObject = new MyChildObject(myBasicObject, new MyInnerObject(strArr, 1.0D, strList, strMap));
         assertFalse(ObjectUtils.equals(myChildObject, this._myChildObject));
     }
 
@@ -83,7 +103,12 @@ public class ObjectUtilsTest {
     public void testChildField_equals() throws IllegalAccessException {
         MyBasicObject myBasicObject = new MyBasicObject("abc", "def", 1, 2, 3, 4, true, false);
         String[] strArr = {"str", "ttt"};
-        MyChildObject myChildObject = new MyChildObject(myBasicObject, new MyInnerObject(strArr, 1.0D));
+        List<String> strList = Arrays.asList(strArr);
+        Map<Integer, String> strMap = new HashMap<>();
+        for (int i = 0; i < strArr.length; i++) {
+            strMap.put(i+1, strArr[i]);
+        }
+        MyChildObject myChildObject = new MyChildObject(myBasicObject, new MyInnerObject(strArr, 1.0D, strList, strMap));
         assertTrue(ObjectUtils.equals(myChildObject, this._myChildObject, "privateString"));
         assertTrue(ObjectUtils.equals(myChildObject, this._myChildObject, "publicString"));
         assertTrue(ObjectUtils.equals(myChildObject, this._myChildObject, "privateInt"));
@@ -99,7 +124,12 @@ public class ObjectUtilsTest {
     public void testChildField_notEquals() throws IllegalAccessException {
         MyBasicObject myBasicObject = new MyBasicObject("ghi", "jkl", 5, 6, 7, 8, false, true);
         String[] strArr = {"int", "ttt"};
-        MyChildObject myChildObject = new MyChildObject(myBasicObject, new MyInnerObject(strArr, 2.0D));
+        List<String> strList = Arrays.asList(strArr);
+        Map<Integer, String> strMap = new HashMap<>();
+        for (int i = 0; i < strArr.length; i++) {
+            strMap.put(i+1, strArr[i]);
+        }
+        MyChildObject myChildObject = new MyChildObject(myBasicObject, new MyInnerObject(strArr, 2.0D, strList, strMap));
         assertFalse(ObjectUtils.equals(myChildObject, this._myChildObject, "privateString"));
         assertFalse(ObjectUtils.equals(myChildObject, this._myChildObject, "publicString"));
         assertFalse(ObjectUtils.equals(myChildObject, this._myChildObject, "privateInt"));
@@ -179,10 +209,14 @@ public class ObjectUtilsTest {
     public class MyInnerObject {
         private final String[] strArr;
         private final Double doubleVal;
+        private final List<String> strList;
+        private final Map<Integer, String> strMap;
 
-        public MyInnerObject(String[] str, Double doubleVal) {
+        public MyInnerObject(String[] str, Double doubleVal, List<String> strList, Map<Integer, String> strMap) {
             this.strArr = str;
             this.doubleVal = doubleVal;
+            this.strList = strList;
+            this.strMap = strMap;
         }
 
         public String[] getStrArr() {

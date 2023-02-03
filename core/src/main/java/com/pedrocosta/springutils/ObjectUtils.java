@@ -1,5 +1,6 @@
 package com.pedrocosta.springutils;
 
+import com.pedrocosta.springutils.collection.CollectionUtils;
 import com.pedrocosta.springutils.output.Log;
 import org.springframework.beans.BeanUtils;
 
@@ -19,10 +20,10 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
      * Check if two objects are equals, comparing a specific field. It verifies only the parameter property.
      * @param o1    First object
      * @param o2    Second object
-     * @param fieldName Name of the field to check
+     * @param propertyName Name of the field to check
      * @return  True if the property of both objects has equal values, false otherwise.
      */
-    public static boolean equals(Object o1, Object o2, String fieldName) {
+    public static boolean equals(Object o1, Object o2, String propertyName) {
         if (deepEquals(o1, o2)) {
             return true;
         }
@@ -35,12 +36,16 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
             return false;
         }
 
-        if (o1.getClass().isArray() && equals((Object[]) o1, (Object[]) o2)) {
-            return true;
+        if (o1.getClass().isArray()) {
+            return ArrayUtils.equals((Object[]) o1, (Object[]) o2);
         }
 
-        Object fieldValueObj1 = getPropertyValue(o1, fieldName);
-        Object fieldValueObj2 = getPropertyValue(o2, fieldName);
+        if (Collection.class.isAssignableFrom(o1.getClass())) {
+            return CollectionUtils.equals((Collection<?>) o1, (Collection<?>) o2, propertyName);
+        }
+
+        Object fieldValueObj1 = getPropertyValue(o1, propertyName);
+        Object fieldValueObj2 = getPropertyValue(o2, propertyName);
 
         return equals(fieldValueObj1, fieldValueObj2);
     }
@@ -53,6 +58,10 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
      * @return  True if all properties of both objects have equal values, false otherwise.
      */
     public static boolean equals(Object o1, Object o2) {
+        if (o1 == null && o2 == null) {
+            return true;
+        }
+
         if (o1 == null || o2 == null) {
             return false;
         }
@@ -66,8 +75,12 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
             return false;
         }
 
-        if (o1.getClass().isArray() && equals((Object[]) o1, (Object[]) o2)) {
-            return true;
+        if (o1.getClass().isArray()) {
+            return ArrayUtils.equals((Object[]) o1, (Object[]) o2);
+        }
+
+        if (Collection.class.isAssignableFrom(o1.getClass())) {
+            return CollectionUtils.equals((Collection<?>) o1, (Collection<?>) o2);
         }
 
         // For complex type
@@ -88,90 +101,16 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
     }
 
     /**
-     * Check if two collections are equals. It verifies all elements of them.
-     * @param o1    First collection
-     * @param o2    Second collection
-     * @return  True if all elements of both collections are equal, false otherwise.
-     */
-    public static boolean equals(Collection<?> o1, Collection<?> o2) {
-        return equals(o1.toArray(new Object[0]), o2.toArray(new Object[0]));
-    }
-
-    /**
-     * Check if two collections are equals, comparing a specific field. It verifies all elements of them.
-     * @param o1    First collection
-     * @param o2    Second collection
-     * @param fieldName Name of the field to check
-     * @return  True if all elements of both collections have the specific property with equal value, false otherwise.
-     */
-    public static boolean equals(Collection<?> o1, Collection<?> o2, String fieldName) {
-        return equals(o1.toArray(new Object[0]), o2.toArray(new Object[0]), fieldName);
-    }
-
-    /**
-     * Check if two array are equals. It verifies all elements of them.
-     * @param o1    First array
-     * @param o2    Second array
-     * @return  True if all elements of both arrays are equal, false otherwise.
-     */
-    public static boolean equals(Object[] o1, Object[] o2) {
-        if (!isValidArray(o1) || !isValidArray(o2)) {
-            return false;
-        }
-
-        if (o1.length != o2.length) {
-            return false;
-        }
-
-        boolean equals = true;
-        for (Object elem1 : o1) {
-            for (Object elem2 : o2) {
-                if(!equals(elem1, elem2)) {
-                    equals = false;
-                    break;
-                }
-            }
-        }
-
-        return equals;
-    }
-
-    /**
-     * Check if two arrays are equals, comparing a specific field. It verifies all elements of them.
-     * @param o1    First array
-     * @param o2    Second array
-     * @param fieldName Name of the field to check
-     * @return  True if all elements of both arrays have the specific property with equal value, false otherwise.
-     */
-    public static boolean equals(Object[] o1, Object[] o2, String fieldName) {
-        if (!isValidArray(o1) || !isValidArray(o2)) {
-            return false;
-        }
-
-        if (o1.length != o2.length) {
-            return false;
-        }
-
-        boolean equals = true;
-        for (Object elem1 : o1) {
-            for (Object elem2 : o2) {
-                if(!equals(elem1, elem2, fieldName)) {
-                    equals = false;
-                    break;
-                }
-            }
-        }
-
-        return equals;
-    }
-
-    /**
      * Check if two objects are exact equals. It looks if both object is the same instance or have exact the same value.
      * @param o1    First object
      * @param o2    Second object
      * @return  True if both objects are the same instance, false otherwise.
      */
     public static boolean deepEquals(Object o1, Object o2) {
+        if (o1 == null && o2 == null) {
+            return true;
+        }
+
         if (o1 == null || o2 == null) {
             return false;
         }
@@ -199,20 +138,70 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
         return Objects.hash(fieldsValues);
     }
 
+    /**
+     * Compare two objects.
+     * @param o1    First object
+     * @param o2    Second object
+     * @return  Zero if the both objects are equal, -1 if the first object is less than second, and positive 1 if it is greater.
+     *          Null value is considered greater than anything.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static int compareTo(Object o1, Object o2) {
+        if (o1 == null && o2 == null) {
+            return 0;
+        }
+
+        if (o1 == null) {
+            return 1;
+        }
+
+        if (o2 == null) {
+            return -1;
+        }
+
+        Comparable comp1 = (Comparable) o1;
+        Comparable comp2 = (Comparable) o2;
+
+        return comp1.compareTo(comp2);
+    }
+
+    /**
+     * Compare the same property of two objects.
+     * @param o1    First object
+     * @param o2    Second object
+     * @param propertyName  Name of the property to check
+     * @return  Zero if the property value in both objects are equal, -1 if the property value of the first object is less than second, and positive 1 if it is greater.
+     *          Null value is considered greater than anything.
+     */
+    public static int compareTo(Object o1, Object o2, String propertyName) {
+        if (o1 == null && o2 == null) {
+            return 0;
+        }
+
+        if (o1 == null) {
+            return 1;
+        }
+
+        if (o2 == null) {
+            return -1;
+        }
+
+        Object fieldValueObj1 = getPropertyValue(o1, propertyName);
+        if (fieldValueObj1 == null) {
+            return 1;
+        }
+        Object fieldValueObj2 = getPropertyValue(o2, propertyName);
+        if (fieldValueObj2 == null) {
+            return -1;
+        }
+
+        return compareTo(fieldValueObj1, fieldValueObj2);
+    }
+
     private static boolean fieldEqualsInternal(Object o1, Object o2, String fieldName) {
         Object fieldValueObj1 = getPropertyValue(o1, fieldName);
         Object fieldValueObj2 = getPropertyValue(o2, fieldName);
         return equals(fieldValueObj1, fieldValueObj2);
-    }
-
-    private static boolean isValidArray(Object[] objArray) {
-        if (objArray == null) {
-            return false;
-        }
-        if (!objArray.getClass().isArray()) {
-            return false;
-        }
-        return true;
     }
 
     private static boolean hasEqualsOverride(Class<?> clazz) {
