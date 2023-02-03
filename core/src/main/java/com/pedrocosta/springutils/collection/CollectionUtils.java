@@ -12,7 +12,7 @@ public class CollectionUtils {
      * @param comparator
      * @param <T>
      */
-    public static <T> void sort(List<T> list, Comparator<T> comparator) {
+    public static <T> void sort(List<T> list, final Comparator<T> comparator) {
         if (list != null) {
             list.sort(comparator);
         }
@@ -38,7 +38,7 @@ public class CollectionUtils {
      * @param o2
      * @return  True if all elements in both collections are equal, false otherwise.
      */
-    public static boolean equals(Collection<?> o1, Collection<?> o2) {
+    public static boolean equals(final Collection<?> o1, final Collection<?> o2) {
         if (o1 == null && o2 == null) {
             return true;
         }
@@ -69,7 +69,7 @@ public class CollectionUtils {
      * @param o2
      * @return  True if all elements in both collections are equal, false otherwise.
      */
-    public static boolean equals(Collection<?> o1, Collection<?> o2, String property) {
+    public static boolean equals(final Collection<?> o1, final Collection<?> o2, final String property) {
         if (o1 == null && o2 == null) {
             return true;
         }

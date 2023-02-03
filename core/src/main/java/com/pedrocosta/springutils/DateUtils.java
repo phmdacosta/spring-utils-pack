@@ -28,7 +28,7 @@ public class DateUtils {
      * @param s date on String to convert
      * @return {@link Date} object of date.
      */
-    public static Date stringToDate(String s) {
+    public static Date stringToDate(final String s) {
         return stringToDate(s, DEFAULT_FORMAT);
     }
 
@@ -39,7 +39,7 @@ public class DateUtils {
      * @param format    format schema
      * @return {@link Date} object of date.
      */
-    public static Date stringToDate(String s, String format) {
+    public static Date stringToDate(final String s, final String format) {
         if (s == null) return null;
         Date date = null;
         try {
@@ -57,7 +57,7 @@ public class DateUtils {
      * @param d date on {@link Date} to convert
      * @return {@link String} object of date.
      */
-    public static String dateToString(Date d) {
+    public static String dateToString(final Date d) {
         return dateToString(d, DEFAULT_FORMAT);
     }
 
@@ -68,7 +68,7 @@ public class DateUtils {
      * @param format    format schema
      * @return {@link String} object of date.
      */
-    public static String dateToString(Date d, String format) {
+    public static String dateToString(final Date d, final String format) {
         if (d == null) return null;
         return new SimpleDateFormat(format).format(d);
     }
@@ -80,7 +80,7 @@ public class DateUtils {
      * @param n     Number of days to add
      * @return New date after addition.
      */
-    public static Date addDay(@NotNull Date date, int n) {
+    public static Date addDay(@NotNull final Date date, final int n) {
         return add(date, Calendar.DATE, n);
     }
 
@@ -91,7 +91,7 @@ public class DateUtils {
      * @param n     Number of months to add
      * @return New date after addition.
      */
-    public static Date addMonth(@NotNull Date date, int n) {
+    public static Date addMonth(@NotNull final Date date, final int n) {
         return add(date, Calendar.MONTH, n);
     }
 
@@ -102,7 +102,7 @@ public class DateUtils {
      * @param n     Number of years to add
      * @return New date after addition.
      */
-    public static Date addYear(@NotNull Date date, int n) {
+    public static Date addYear(@NotNull final Date date, final int n) {
         return add(date, Calendar.YEAR, n);
     }
 
@@ -115,7 +115,7 @@ public class DateUtils {
      * @return New date after addition.
      */
     @Nullable
-    public static Date addPeriod(@NotNull Date date, String type, int n) {
+    public static Date addPeriod(@NotNull final Date date, final String type, final int n) {
         switch (type) {
             case DateUtils.S_DAY:
                 return DateUtils.addDay(date, n);
@@ -128,7 +128,7 @@ public class DateUtils {
         }
     }
 
-    private static Date add(Date date, int type, int n) {
+    private static Date add(final Date date, final int type, final int n) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.add(type, n);

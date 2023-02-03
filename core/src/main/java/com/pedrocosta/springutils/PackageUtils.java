@@ -2,7 +2,6 @@ package com.pedrocosta.springutils;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.lang.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class PackageUtils {
 
-    public static Package getProjectPackage(ApplicationContext context) throws ClassNotFoundException {
+    public static Package getProjectPackage(final ApplicationContext context) throws ClassNotFoundException {
         Package pack = null;
 
         Map<String, Object> candidates = context.getBeansWithAnnotation(SpringBootApplication.class);
@@ -51,13 +50,13 @@ public class PackageUtils {
                 ).collect(Collectors.toList());
     }
 
-    public static Package getPackage(String packageName) {
+    public static Package getPackage(final String packageName) {
         return Arrays.stream(Package.getPackages())
                 .filter(pack -> pack.getName().equals(packageName))
                 .findFirst().orElse(null);
     }
 
-    public static String getParentPackageName(String packageName) {
+    public static String getParentPackageName(final String packageName) {
         String[] packageParts = packageName.split("\\.");
         packageParts[packageParts.length - 1] = "";
         final StringBuilder result = new StringBuilder();

@@ -23,7 +23,7 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
      * @param propertyName Name of the field to check
      * @return  True if the property of both objects has equal values, false otherwise.
      */
-    public static boolean equals(Object o1, Object o2, String propertyName) {
+    public static boolean equals(final Object o1, final Object o2, final String propertyName) {
         if (deepEquals(o1, o2)) {
             return true;
         }
@@ -57,7 +57,7 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
      * @param o2    Second object
      * @return  True if all properties of both objects have equal values, false otherwise.
      */
-    public static boolean equals(Object o1, Object o2) {
+    public static boolean equals(final Object o1, final Object o2) {
         if (o1 == null && o2 == null) {
             return true;
         }
@@ -106,7 +106,7 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
      * @param o2    Second object
      * @return  True if both objects are the same instance, false otherwise.
      */
-    public static boolean deepEquals(Object o1, Object o2) {
+    public static boolean deepEquals(final Object o1, final Object o2) {
         if (o1 == null && o2 == null) {
             return true;
         }
@@ -127,7 +127,7 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
      * @param object    Object
      * @return  Hash code
      */
-    public static int hashCode(Object object) {
+    public static int hashCode(final Object object) {
         Map<String, String> properties = describeProperties(object);
         Object[] fieldsValues = new Object[properties.size()];
         int i = 0;
@@ -146,7 +146,7 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
      *          Null value is considered greater than anything.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static int compareTo(Object o1, Object o2) {
+    public static int compareTo(final Object o1, final Object o2) {
         if (o1 == null && o2 == null) {
             return 0;
         }
@@ -173,7 +173,7 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
      * @return  Zero if the property value in both objects are equal, -1 if the property value of the first object is less than second, and positive 1 if it is greater.
      *          Null value is considered greater than anything.
      */
-    public static int compareTo(Object o1, Object o2, String propertyName) {
+    public static int compareTo(final Object o1, final Object o2, final String propertyName) {
         if (o1 == null && o2 == null) {
             return 0;
         }
@@ -198,17 +198,17 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
         return compareTo(fieldValueObj1, fieldValueObj2);
     }
 
-    private static boolean fieldEqualsInternal(Object o1, Object o2, String fieldName) {
+    private static boolean fieldEqualsInternal(final Object o1, final Object o2, final String fieldName) {
         Object fieldValueObj1 = getPropertyValue(o1, fieldName);
         Object fieldValueObj2 = getPropertyValue(o2, fieldName);
         return equals(fieldValueObj1, fieldValueObj2);
     }
 
-    private static boolean hasEqualsOverride(Class<?> clazz) {
+    private static boolean hasEqualsOverride(final Class<?> clazz) {
         return ClassUtils.hasDeclaredMethod(clazz, "equals");
     }
 
-    private static Field getField(final Class<?> clazz, String fieldName) throws NoSuchFieldException {
+    private static Field getField(final Class<?> clazz, final String fieldName) throws NoSuchFieldException {
         Field field = null;
         Class<?> superClazz = clazz;
         while (field == null && superClazz != null) {
@@ -226,7 +226,7 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
         return field;
     }
 
-    private static Object getPropertyValue(Object obj, String propertyName) {
+    private static Object getPropertyValue(final Object obj, final String propertyName) {
         PropertyDescriptor propDescriptor = BeanUtils.getPropertyDescriptor(obj.getClass(), propertyName);
         if (propDescriptor != null) {
             Method readMethod = propDescriptor.getReadMethod();
@@ -250,7 +250,7 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
         return null;
     }
 
-    private static Map<String, String> describeProperties(Object object) {
+    private static Map<String, String> describeProperties(final Object object) {
         try {
             return org.apache.commons.beanutils.BeanUtils.describe(object);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

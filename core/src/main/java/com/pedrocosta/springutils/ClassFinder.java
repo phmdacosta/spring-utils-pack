@@ -27,7 +27,7 @@ public class ClassFinder {
      * @param name Name of class
      */
     @SuppressWarnings("unchecked")
-    public static <T> Class<T> findClassByName(String name) throws ClassNotFoundException {
+    public static <T> Class<T> findClassByName(final String name) throws ClassNotFoundException {
         return (Class<T>) Class.forName(name);
     }
 
@@ -55,7 +55,7 @@ public class ClassFinder {
         return result;
     }
 
-    private static List<String> getClassNamesFromJar(String jarEncode, String packageName) throws IOException {
+    private static List<String> getClassNamesFromJar(final String jarEncode, final String packageName) throws IOException {
         List<String> names = new ArrayList<>();
         String jarFileName = URLDecoder.decode(jarEncode, "UTF-8");
         jarFileName = jarFileName.substring(5,jarFileName.indexOf("!"));
@@ -71,7 +71,7 @@ public class ClassFinder {
         return names;
     }
 
-    private static List<String> getClassNamesFromFilePath(String path, String packageName) throws URISyntaxException {
+    private static List<String> getClassNamesFromFilePath(final String path, final String packageName) throws URISyntaxException {
         List<String> result = new ArrayList<>();
         URI uri = new URI(path);
         File folder = new File(uri);
@@ -92,7 +92,7 @@ public class ClassFinder {
         return result;
     }
 
-    private static List<String> getFileNamesFromFolder(File folder, boolean withPath) {
+    private static List<String> getFileNamesFromFolder(final File folder, boolean withPath) {
         List<String> names = new ArrayList<>();
         File[] classFiles = folder.listFiles();
         if (classFiles == null) {

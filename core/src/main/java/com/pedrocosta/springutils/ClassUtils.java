@@ -17,7 +17,7 @@ public class ClassUtils {
      * @param clazz Class to look.
      * @return true if class has annotation, false otherwise.
      */
-    public static boolean hasAnnotation(Class<?> clazz, Class<? extends Annotation> annotationClass) {
+    public static boolean hasAnnotation(final Class<?> clazz, final Class<? extends Annotation> annotationClass) {
         boolean has = false;
         try {
             Annotation annot = clazz.getAnnotation(annotationClass);
@@ -27,15 +27,15 @@ public class ClassUtils {
     }
 
     @Deprecated
-    public static boolean isPrimitive(Class<?> clazz) {
+    public static boolean isPrimitive(final Class<?> clazz) {
         return WrapperType.is(clazz) || clazz.isPrimitive();
     }
 
-    public static boolean isSimpleProperty(Class<?> clazz) {
+    public static boolean isSimpleProperty(final Class<?> clazz) {
         return BeanUtils.isSimpleProperty(clazz);
     }
 
-    public static boolean hasDeclaredMethod(Class<?> clazz, String methodName) {
+    public static boolean hasDeclaredMethod(final Class<?> clazz, final String methodName) {
         boolean has = true;
         try {
             clazz.getDeclaredMethod(methodName, Object.class);

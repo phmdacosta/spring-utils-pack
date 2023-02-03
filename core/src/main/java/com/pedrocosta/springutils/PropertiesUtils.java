@@ -17,7 +17,7 @@ public abstract class PropertiesUtils {
     private static final String PROPERTIES_SUFFIX = ".properties";
     private Properties properties;
 
-    public String getProperty(String key) {
+    public String getProperty(final String key) {
         return this.getProperties().getProperty(key);
     }
 
@@ -30,7 +30,7 @@ public abstract class PropertiesUtils {
         this.properties.excludePasswords(true);
     }
 
-    protected void loadProperties(String propFileName) {
+    protected void loadProperties(final String propFileName) {
         initProperties();
         try {
             String prefixPropFileName = "application";
@@ -48,25 +48,25 @@ public abstract class PropertiesUtils {
         } catch (IOException | NullPointerException ignored) {}
     }
 
-    private Resource[] sort(Resource[] resources) {
+    private Resource[] sort(final Resource[] resources) {
         Set<Resource> resourceSet = new TreeSet<>(new ResourceNameComparator());
         resourceSet.addAll(Arrays.asList(resources));
         return resourceSet.toArray(new Resource[0]);
     }
 
-    private void loadPropertiesFiles(Resource[] resourceFiles) throws IOException {
+    private void loadPropertiesFiles(final Resource[] resourceFiles) throws IOException {
         for (Resource resource : resourceFiles) {
             if (resource != null) loadPropertiesFile(resource);
         }
     }
 
-    private void loadPropertiesFile(Resource resourceFile) throws IOException {
+    private void loadPropertiesFile(final Resource resourceFile) throws IOException {
         InputStream resourceStream = resourceFile.getInputStream();
         this.properties.load(resourceStream);
         resourceStream.close();
     }
 
-    private Resource[] getTestResources(Resource[] resources) throws IOException {
+    private Resource[] getTestResources(final Resource[] resources) throws IOException {
         List<Resource> testResources = new ArrayList<>();
         for (int i = 0; i < resources.length; i++) {
             Resource resourceFile = resources[i];
@@ -78,13 +78,13 @@ public abstract class PropertiesUtils {
         return testResources.toArray(new Resource[0]);
     }
 
-    private boolean isTestResource(Resource resource) throws IOException {
+    private boolean isTestResource(final Resource resource) throws IOException {
         return resource != null && resource.getURL().getPath().contains("test");
     }
 
     private static class ResourceNameComparator implements Comparator<Resource> {
         @Override
-        public int compare(Resource r1, Resource r2) {
+        public int compare(final Resource r1, final Resource r2) {
             if (r1 == null || r1.getFilename() == null) {
                 return 1;
             }
