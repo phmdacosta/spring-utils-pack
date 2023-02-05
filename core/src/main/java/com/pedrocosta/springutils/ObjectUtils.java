@@ -198,6 +198,36 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
         return compareTo(fieldValueObj1, fieldValueObj2);
     }
 
+    /**
+     * Get value of a property from object.
+     * @param obj
+     * @param propertyName
+     * @return
+     */
+    public static Object getPropertyValue(final Object obj, final String propertyName) {
+        PropertyDescriptor propDescriptor = BeanUtils.getPropertyDescriptor(obj.getClass(), propertyName);
+        if (propDescriptor != null) {
+            Method readMethod = propDescriptor.getReadMethod();
+            if (readMethod != null) {
+                try {
+                    return readMethod.invoke(obj);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    Log.error(ObjectUtils.class,
+                            String.format("Could not find read method for property %s", propertyName));
+                }
+            }
+        }
+
+        try {
+            return getField(obj.getClass(), propertyName).get(obj);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            Log.error(ObjectUtils.class,
+                    String.format("Could not access property %s", propertyName));
+        }
+
+        return null;
+    }
+
     private static boolean fieldEqualsInternal(final Object o1, final Object o2, final String fieldName) {
         Object fieldValueObj1 = getPropertyValue(o1, fieldName);
         Object fieldValueObj2 = getPropertyValue(o2, fieldName);
@@ -224,30 +254,6 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
         }
 
         return field;
-    }
-
-    private static Object getPropertyValue(final Object obj, final String propertyName) {
-        PropertyDescriptor propDescriptor = BeanUtils.getPropertyDescriptor(obj.getClass(), propertyName);
-        if (propDescriptor != null) {
-            Method readMethod = propDescriptor.getReadMethod();
-            if (readMethod != null) {
-                try {
-                    return readMethod.invoke(obj);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    Log.error(ObjectUtils.class,
-                            String.format("Could not find read method for property %s", propertyName));
-                }
-            }
-        }
-
-        try {
-            return getField(obj.getClass(), propertyName).get(obj);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            Log.error(ObjectUtils.class,
-                    String.format("Could not access property %s", propertyName));
-        }
-
-        return null;
     }
 
     private static Map<String, String> describeProperties(final Object object) {
