@@ -1,7 +1,14 @@
 package com.pedrocosta.springutils;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.core.type.filter.AssignableTypeFilter;
+
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -9,8 +16,11 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Utility class to find classes by reflection.
@@ -53,6 +63,33 @@ public class ClassFinder {
             result.addAll(getClassNamesFromFilePath(packageURL.toString(), packageName));
 
         return result;
+    }
+
+    public static List<Class<?>> findAllByAssignable(final ApplicationContext context, final Class<?> assignable) throws ClassNotFoundException {
+        ClassPathScanningCandidateComponentProvider provider =
+                new ClassPathScanningCandidateComponentProvider(false);
+        provider.addIncludeFilter(new AssignableTypeFilter(assignable));
+        return findAllByProvider(context, provider);
+    }
+
+    public static List<Class<?>> findAllByAnnotation(final ApplicationContext context, final Class<? extends Annotation> annotation) throws ClassNotFoundException {
+        ClassPathScanningCandidateComponentProvider provider =
+                new ClassPathScanningCandidateComponentProvider(false);
+        provider.addIncludeFilter(new AnnotationTypeFilter(annotation));
+        return findAllByProvider(context, provider);
+    }
+
+    private static List<Class<?>> findAllByProvider(final ApplicationContext context, final ClassPathScanningCandidateComponentProvider provider) throws ClassNotFoundException {
+        String projectPackageName = PackageUtils.getProjectPackage(context).getName();
+        Set<BeanDefinition> candidates = provider.findCandidateComponents(projectPackageName);
+
+        return candidates.stream().flatMap(bean -> {
+            try {
+                return Stream.of(Class.forName(bean.getBeanClassName()));
+            } catch (ClassNotFoundException e) {
+                return Stream.empty();
+            }
+        }).collect(Collectors.toList());
     }
 
     private static List<String> getClassNamesFromJar(final String jarEncode, final String packageName) throws IOException {
