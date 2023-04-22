@@ -30,9 +30,10 @@ public class HtmlFileParser extends FileParser {
     public String read() {
         for (Map.Entry<String, String> entry : this.params.entrySet()) {
             String paramHtmlName = "${" + entry.getKey() + "}";
+            String paramHtmlValue = entry.getValue() != null ? entry.getValue() : "";
             if (this.content.contains(paramHtmlName)) {
                 paramHtmlName = paramHtmlName.replace("$", "\\$").replace("{", "\\{");
-                this.content = this.content.replaceAll(paramHtmlName, entry.getValue());
+                this.content = this.content.replaceAll(paramHtmlName, paramHtmlValue);
             }
         }
         return this.content;
