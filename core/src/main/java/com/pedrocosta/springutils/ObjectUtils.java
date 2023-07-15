@@ -205,6 +205,16 @@ public class ObjectUtils extends org.springframework.util.ObjectUtils {
      * @return
      */
     public static Object getPropertyValue(final Object obj, final String propertyName) {
+        if (obj == null) {
+            return null;
+        }
+
+        if (propertyName.contains("\\.")) {
+            String[] propertiesArray = propertyName.split("\\.", 2);
+            Object child = getPropertyValue(obj, propertiesArray[0]);
+            return getPropertyValue(child, String.valueOf(propertiesArray[1]));
+        }
+
         PropertyDescriptor propDescriptor = BeanUtils.getPropertyDescriptor(obj.getClass(), propertyName);
         if (propDescriptor != null) {
             Method readMethod = propDescriptor.getReadMethod();
