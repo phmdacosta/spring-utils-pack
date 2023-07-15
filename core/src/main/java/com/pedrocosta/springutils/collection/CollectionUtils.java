@@ -1,6 +1,7 @@
 package com.pedrocosta.springutils.collection;
 
 import com.pedrocosta.springutils.ObjectUtils;
+import com.pedrocosta.springutils.collection.comparators.DefaultComparator;
 
 import java.util.*;
 
@@ -19,17 +20,39 @@ public class CollectionUtils {
     }
 
     /**
+     * Sort a list by many properties values.
+     * @param list              List to sort
+     * @param properties        Properties to looking for when sort
+     * @param asc               For each property, check if they must be sorted ascending or not
+     * @param nullValuesBefore  Check if null values come first (for all properties)
+     */
+    public static <T> void sort(List<T> list, final String[] properties, final boolean[] asc, final boolean nullValuesBefore) {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        sort(list, new DefaultComparator<>(properties, asc, nullValuesBefore));
+    }
+
+    /**
+     * Sort a list by a specific property value.
+     * @param list
+     * @param property
+     * @param <T>
+     */
+    public static <T> void sort(List<T> list, final String property, final boolean asc, final boolean nullValuesBefore) {
+        String[] properties = {property};
+        boolean[] ascArr = {asc};
+        sort(list, properties, ascArr, nullValuesBefore);
+    }
+
+    /**
      * Sort a list by a specific property value.
      * @param list
      * @param property
      * @param <T>
      */
     public static <T> void sort(List<T> list, final String property) {
-        if (list == null || list.isEmpty()) {
-            return;
-        }
-        Comparator<T> comparator = (o1, o2) -> ObjectUtils.compareTo(o1, o2, property);
-        sort(list, comparator);
+        sort(list, property, true, false);
     }
 
     /**
@@ -92,6 +115,48 @@ public class CollectionUtils {
         }
 
         return true;
+    }
+
+    public <T> T search(final Collection<T> collection, final String property, final Object value) {
+        return search(collection, property, Operator.EQUALS_THEN, value);
+    }
+
+    public <T> T search(final Collection<T> collection, final String property, final Operator operator, final Object value) {
+        if (value == null) {
+            return null;
+        }
+        return collection.stream()
+                .filter(obj -> filterSearch(obj, property, operator, value))
+                .findAny().orElse(null);
+    }
+
+    private boolean filterSearch(Object obj, String property, Operator operator, Object value) {
+        Object objPropValue = ObjectUtils.getPropertyValue(obj, property);
+        int resultCompare = ObjectUtils.compareTo(value, objPropValue);
+        boolean result;
+
+        switch (operator) {
+            case LESS_THEN:
+                result = resultCompare < 0;
+                break;
+            case LESS_OR_EQUALS_THEN:
+                result = resultCompare <= 0;
+                break;
+            case GREATER_THEN:
+                result = resultCompare > 0;
+                break;
+            case GREATER_OR_EQUALS_THEN:
+                result = resultCompare >= 0;
+                break;
+            case NOT_EQUALS_THEN:
+                result = resultCompare != 0;
+                break;
+            case EQUALS_THEN:
+            default:
+                result = resultCompare == 0;
+        }
+
+        return result;
     }
 
 }
