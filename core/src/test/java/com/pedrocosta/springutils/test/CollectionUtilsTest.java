@@ -1,7 +1,7 @@
 package com.pedrocosta.springutils.test;
 
 import com.pedrocosta.springutils.collection.CollectionUtils;
-import com.pedrocosta.springutils.test.models.ModelTest;
+import com.pedrocosta.springutils.test.utils.ModelTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

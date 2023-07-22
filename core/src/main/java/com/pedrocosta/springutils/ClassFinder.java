@@ -1,5 +1,6 @@
 package com.pedrocosta.springutils;
 
+import org.reflections.Reflections;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -70,6 +71,20 @@ public class ClassFinder {
                 new ClassPathScanningCandidateComponentProvider(false);
         provider.addIncludeFilter(new AssignableTypeFilter(assignable));
         return findAllByProvider(context, provider);
+    }
+
+    public static List<Class<?>> findAllByAnnotation(final Class<? extends Annotation> annotation) throws ClassNotFoundException {
+        return findAllByAnnotation(annotation, null);
+    }
+
+    public static List<Class<?>> findAllByAnnotation(final Class<? extends Annotation> annotation, final Package projectPackage) throws ClassNotFoundException {
+        Package currentPackage = projectPackage;
+        if (projectPackage == null) {
+            currentPackage = ClassFinder.class.getPackage();
+        }
+        Reflections reflections = new Reflections(currentPackage.getName());
+        Set<Class<?>> allClasses = reflections.getTypesAnnotatedWith(annotation);
+        return new ArrayList<>(allClasses);
     }
 
     public static List<Class<?>> findAllByAnnotation(final ApplicationContext context, final Class<? extends Annotation> annotation) throws ClassNotFoundException {

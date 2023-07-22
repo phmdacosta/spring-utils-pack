@@ -1,4 +1,4 @@
-package com.pedrocosta.springutils.test.models;
+package com.pedrocosta.springutils.test.utils;
 
 import java.util.Objects;
 
