@@ -6,7 +6,7 @@
 
     <groupId>com.pedrocosta.utils</groupId>
     <artifactId>spring-utils-pack</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -14,9 +14,11 @@
         <module>json-manager</module>
         <module>view-mapper</module>
         <module>mail-sender</module>
+        <module>test-utils</module>
     </modules>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
