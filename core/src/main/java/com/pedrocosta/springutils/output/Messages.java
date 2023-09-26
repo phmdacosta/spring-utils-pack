@@ -56,7 +56,12 @@ public final class Messages {
      * @return {@link ResourceBundleMessageSource} object.
      */
     private static ReloadableResourceBundleMessageSource getSource() {
-        return getSource(AppProperties.get("spring.messages.basename"));
+        String basenamesVal = AppProperties.get("spring.messages.basename");
+        String[] basenamesArr = new String[0];
+        if (basenamesVal != null) {
+            basenamesArr = basenamesVal.split(",");
+        }
+        return getSource(basenamesArr);
     }
 
     /**
