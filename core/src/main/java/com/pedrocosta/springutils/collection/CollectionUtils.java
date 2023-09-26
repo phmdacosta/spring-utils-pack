@@ -5,7 +5,7 @@ import com.pedrocosta.springutils.collection.comparators.DefaultComparator;
 
 import java.util.*;
 
-public class CollectionUtils {
+public class CollectionUtils extends org.springframework.util.CollectionUtils {
 
     /**
      * Sort a list using a comparator.
@@ -128,6 +128,13 @@ public class CollectionUtils {
         return collection.stream()
                 .filter(obj -> filterSearch(obj, property, operator, value))
                 .findAny().orElse(null);
+    }
+
+    public <T> boolean contains(final Collection<T> collection, final String property, final Object value) {
+        T found = collection.stream()
+                .filter(obj -> filterSearch(obj, property, Operator.EQUALS_THEN, value))
+                .findAny().orElse(null);
+        return found != null;
     }
 
     private boolean filterSearch(Object obj, String property, Operator operator, Object value) {
