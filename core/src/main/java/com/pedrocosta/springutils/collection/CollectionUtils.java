@@ -4,6 +4,8 @@ import com.pedrocosta.springutils.ObjectUtils;
 import com.pedrocosta.springutils.collection.comparators.DefaultComparator;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class CollectionUtils extends org.springframework.util.CollectionUtils {
 
@@ -117,11 +119,11 @@ public class CollectionUtils extends org.springframework.util.CollectionUtils {
         return true;
     }
 
-    public <T> T search(final Collection<T> collection, final String property, final Object value) {
+    public static <T> T search(final Collection<T> collection, final String property, final Object value) {
         return search(collection, property, Operator.EQUALS_THEN, value);
     }
 
-    public <T> T search(final Collection<T> collection, final String property, final Operator operator, final Object value) {
+    public static <T> T search(final Collection<T> collection, final String property, final Operator operator, final Object value) {
         if (value == null) {
             return null;
         }
@@ -130,14 +132,14 @@ public class CollectionUtils extends org.springframework.util.CollectionUtils {
                 .findAny().orElse(null);
     }
 
-    public <T> boolean contains(final Collection<T> collection, final String property, final Object value) {
+    public static <T> boolean contains(final Collection<T> collection, final String property, final Object value) {
         T found = collection.stream()
                 .filter(obj -> filterSearch(obj, property, Operator.EQUALS_THEN, value))
                 .findAny().orElse(null);
         return found != null;
     }
 
-    private boolean filterSearch(Object obj, String property, Operator operator, Object value) {
+    private static boolean filterSearch(Object obj, String property, Operator operator, Object value) {
         Object objPropValue = ObjectUtils.getPropertyValue(obj, property);
         int resultCompare = ObjectUtils.compareTo(value, objPropValue);
         boolean result;
