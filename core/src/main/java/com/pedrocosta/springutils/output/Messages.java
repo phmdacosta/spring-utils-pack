@@ -55,7 +55,7 @@ public final class Messages {
      * If property <i>spring.messages.basename</i> not set, it uses
      * @return {@link ResourceBundleMessageSource} object.
      */
-    private static ReloadableResourceBundleMessageSource getSource() {
+    public static ReloadableResourceBundleMessageSource getSource() {
         String basenamesVal = AppProperties.get("spring.messages.basename");
         String[] basenamesArr = new String[0];
         if (basenamesVal != null) {
